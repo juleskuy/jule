@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Command } from '../../types/command';
 import { addWarning, addCase, getNextCaseId, getUserWarnings } from '../../database';
 
@@ -20,7 +20,7 @@ export default {
         ),
     category: 'moderation',
     permissions: [PermissionFlagsBits.ModerateMembers],
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         const user = interaction.options.getUser('user', true);
         const reason = interaction.options.getString('reason', true);
         const guildId = interaction.guildId!;

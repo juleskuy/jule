@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Command } from '../../types/command';
 import { getUserProfile } from '../../database';
 
@@ -13,7 +13,7 @@ export default {
                 .setRequired(false)
         ),
     category: 'economy',
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         const user = interaction.options.getUser('user') || interaction.user;
         const profile = getUserProfile(interaction.guildId!, user.id);
 

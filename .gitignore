@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .env
-database/
+database/*.json
+!database/.gitkeep
 *.log
 .DS_Store

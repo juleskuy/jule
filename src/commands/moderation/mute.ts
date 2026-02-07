@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Command } from '../../types/command';
 import { addCase, getNextCaseId, addTempMute } from '../../database';
 
@@ -28,7 +28,7 @@ export default {
         ),
     category: 'moderation',
     permissions: [PermissionFlagsBits.ModerateMembers],
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         const user = interaction.options.getUser('user', true);
         const duration = interaction.options.getInteger('duration', true);
         const reason = interaction.options.getString('reason') || 'No reason provided';

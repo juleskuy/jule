@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Command } from '../../types/command';
 import { getUserProfile, updateUserProfile } from '../../database';
 
@@ -10,7 +10,7 @@ export default {
         .setName('daily')
         .setDescription('Claim your daily reward'),
     category: 'economy',
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         const profile = getUserProfile(interaction.guildId!, interaction.user.id);
         const now = Date.now();
 

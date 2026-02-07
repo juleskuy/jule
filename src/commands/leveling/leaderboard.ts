@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Command } from '../../types/command';
 import { getLeaderboard } from '../../database';
 
@@ -7,7 +7,7 @@ export default {
         .setName('leaderboard')
         .setDescription('View the server leaderboard'),
     category: 'leveling',
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         const leaderboard = getLeaderboard(interaction.guildId!, 10);
 
         if (leaderboard.length === 0) {

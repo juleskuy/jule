@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ChannelType } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ChannelType, ChatInputCommandInteraction } from 'discord.js';
 import { Command } from '../../types/command';
 import { updateGuildConfig, getGuildConfig } from '../../database';
 
@@ -60,7 +60,7 @@ export default {
         ),
     category: 'admin',
     permissions: [PermissionFlagsBits.Administrator],
-    async execute(interaction) {
+    async execute(interaction: ChatInputCommandInteraction) {
         const subcommand = interaction.options.getSubcommand();
 
         if (subcommand === 'view') {
