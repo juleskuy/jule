@@ -72,6 +72,30 @@ export default {
         )
         .addSubcommand(subcommand =>
             subcommand
+                .setName('ticket-category')
+                .setDescription('Set the category for new tickets')
+                .addChannelOption(option =>
+                    option
+                        .setName('category')
+                        .setDescription('The category to create tickets in')
+                        .addChannelTypes(ChannelType.GuildCategory)
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('ticket-logs')
+                .setDescription('Set the channel for ticket transcripts')
+                .addChannelOption(option =>
+                    option
+                        .setName('channel')
+                        .setDescription('The channel for transcripts')
+                        .addChannelTypes(ChannelType.GuildText)
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
                 .setName('view')
                 .setDescription('View current server configuration')
         ),
@@ -114,6 +138,14 @@ export default {
                             `> **Muted Role**\n> ${config.mutedRole ? `<@&${config.mutedRole}>` : '`Not Set`'}`
                         ].join('\n\n'),
                         inline: false
+                    },
+                    {
+                        name: '🎫 Ticket System',
+                        value: [
+                            `> **Category**\n> ${config.ticketCategoryId ? `<#${config.ticketCategoryId}>` : '`Not Set`'}`,
+                            `> **Transcripts**\n> ${config.ticketTranscriptChannelId ? `<#${config.ticketTranscriptChannelId}>` : '`Not Set`'}`
+                        ].join('\n\n'),
+                        inline: true
                     }
                 )
                 .setThumbnail(guild?.iconURL() || null)
@@ -163,6 +195,22 @@ export default {
             settingName = 'Leveling System';
             settingValue = enabled ? '✅ Enabled' : '❌ Disabled';
             message = `The leveling system has been **${enabled ? 'enabled' : 'disabled'}** for this server`;
+        } else if (subcommand === 'ticket-category') {
+            const category = interaction.options.getChannel('category', true);
+            if (category && category.type === ChannelType.GuildCategory) {
+                updateGuildConfig(interaction.guildId!, { ticketCategoryId: category.id });
+                settingName = 'Ticket Category';
+                settingValue = `${category.name}`;
+                message = `Tickets will be created in **${category.name}**`;
+            }
+        } else if (subcommand === 'ticket-logs') {
+            const channel = interaction.options.getChannel('channel', true);
+            if (channel && channel.type === ChannelType.GuildText) {
+                updateGuildConfig(interaction.guildId!, { ticketTranscriptChannelId: channel.id });
+                settingName = 'Ticket Logs';
+                settingValue = `${channel}`;
+                message = `Transcripts will be sent to ${channel}`;
+            }
         }
 
         const embed = new EmbedBuilder()

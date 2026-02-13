@@ -30,33 +30,25 @@ export default {
         const nextLevelXp = (profile.level + 1) * XP_PER_LEVEL;
         const xpProgress = profile.xp - currentLevelXp;
         const xpNeeded = nextLevelXp - currentLevelXp;
-        const percentage = Math.floor((xpProgress / xpNeeded) * 100);
 
-        // Progress Bar Visual
-        // Using block characters for a smooth bar
-        const totalBars = 15;
-        const filledBars = Math.round((percentage / 100) * totalBars);
-        const emptyBars = totalBars - filledBars;
-        const progressBar = '█'.repeat(filledBars) + '░'.repeat(emptyBars);
+        // --- NEW: Generate Image ---
+        try {
+            await interaction.deferReply(); // Generating image might take a second
 
-        let rankEmoji = '👤';
-        if (rank === 1) rankEmoji = '👑';
-        else if (rank === 2) rankEmoji = '🥈';
-        else if (rank === 3) rankEmoji = '🥉';
+            const { createRankCard } = await import('../../utils/canvas');
+            const attachment = await createRankCard({
+                user: user,
+                level: profile.level,
+                currentXp: xpProgress, // XP into current level
+                requiredXp: xpNeeded,  // XP needed for next level
+                rank: rank,
+            });
 
-        const embed = new EmbedBuilder()
-            .setColor(0x3498db)
-            .setAuthor({ name: `${user.username}'s Rank Card`, iconURL: user.displayAvatarURL() })
-            .setThumbnail(user.displayAvatarURL({ size: 256 }))
-            .addFields(
-                { name: '🏆 Rank', value: `\`#${rank || 'Unranked'}\` ${rankEmoji}`, inline: true },
-                { name: '⭐ Level', value: `\`${profile.level}\``, inline: true },
-                { name: '✨ Total XP', value: `\`${profile.xp.toLocaleString()}\``, inline: true },
-                { name: `📈 Progress to Level ${profile.level + 1}`, value: `\`${progressBar}\` **${percentage}%**\n\`${xpProgress} / ${xpNeeded} XP\``, inline: false }
-            )
-            .setFooter({ text: 'Jule Leveling System', iconURL: interaction.client.user?.displayAvatarURL() })
-            .setTimestamp();
+            await interaction.editReply({ files: [attachment] });
 
-        await interaction.reply({ embeds: [embed] });
+        } catch (error) {
+            console.error(error);
+            await interaction.editReply({ content: '❌ Failed to generate rank card.' });
+        }
     },
 } as Command;

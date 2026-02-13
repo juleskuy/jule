@@ -7,6 +7,8 @@ export interface GuildConfig {
     mutedRole?: string;
     levelingEnabled?: boolean;
     joinToCreateChannelId?: string;
+    ticketCategoryId?: string;
+    ticketTranscriptChannelId?: string;
 }
 
 export interface UserProfile {
@@ -18,6 +20,7 @@ export interface UserProfile {
     lastDaily?: number;
     lastWork?: number;
     lastRob?: number;
+    inventory?: { [itemId: string]: number };
 }
 
 export interface Warning {

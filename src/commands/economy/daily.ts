@@ -33,9 +33,24 @@ export default {
         }
 
         const newBalance = profile.balance + DAILY_AMOUNT;
+
+        // Random Item Drop (30% Chance)
+        let dropMsg = '';
+        if (Math.random() < 0.3) {
+            const { COMM_ITEMS } = await import('../../utils/items');
+            const dropItem = COMM_ITEMS.find(i => i.usable && i.price < 500); // Only small consumable items
+            if (dropItem) {
+                if (!profile.inventory) profile.inventory = {};
+                if (!profile.inventory[dropItem.id]) profile.inventory[dropItem.id] = 0;
+                profile.inventory[dropItem.id]++;
+                dropMsg = `\n🎁 **Bonus:** You found a **${dropItem.emoji} ${dropItem.name}**!`;
+            }
+        }
+
         updateUserProfile(interaction.guildId!, interaction.user.id, {
             balance: newBalance,
             lastDaily: now,
+            inventory: profile.inventory
         });
 
         // Determine a simple streak visual (even if we don't track streak strictly yet, we can hype it up)
@@ -43,7 +58,7 @@ export default {
             .setColor(0x2ecc71) // Green for success
             .setAuthor({ name: 'Daily Login Bonus', iconURL: interaction.user.displayAvatarURL() })
             .setTitle('🎁 Reward Claimed!')
-            .setDescription('Here is your daily allowance! Come back tomorrow for more.')
+            .setDescription(`Here is your daily allowance! Come back tomorrow for more.${dropMsg}`)
             .setThumbnail('https://em-content.zobj.net/source/microsoft-teams/337/wrapped-gift_1f381.png') // Gift emoji large
             .addFields(
                 { name: '💰 Amount', value: `\`+${DAILY_AMOUNT} coins\``, inline: true },

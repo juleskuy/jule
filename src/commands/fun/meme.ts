@@ -1,4 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { Command } from '../../types/command';
 
 const JOKES = [
     { q: 'Why did the developer go broke?', a: 'Because he used up all his cache.' },
@@ -33,14 +34,14 @@ export default {
                 .setTitle('🤣 Random Joke')
                 .setDescription(`**${randJoke.q}**\n\n||${randJoke.a}||`) // Inline spoiler for better flow
                 .setFooter({ text: 'Click the black box to reveal!' });
-            return interaction.reply({ embeds: [embed] });
+            await interaction.reply({ embeds: [embed] });
         } else {
             const embed = new EmbedBuilder()
                 .setColor(0x3498db)
                 .setTitle('🖼️ Random Meme')
                 .setImage(randMeme)
                 .setFooter({ text: 'Powered by Giphy / Jule' });
-            return interaction.reply({ embeds: [embed] });
+            await interaction.reply({ embeds: [embed] });
         }
     },
 } as Command;

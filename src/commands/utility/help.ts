@@ -33,11 +33,14 @@ const CATEGORIES: Record<string, {
         commands: [
             { name: '/balance', desc: 'Check your current wallet and bank balance' },
             { name: '/daily', desc: 'Claim your daily reward (24h cooldown)' },
-            { name: '/work', desc: 'Work a shift to earn coins (1h cooldown)' },
+            { name: '/work', desc: 'Work a shift to earn coins (Coffee Boosts avail!)' },
             { name: '/pay', desc: 'Transfer coins to another user securely' },
             { name: '/slots', desc: 'Test your luck with the slot machine' },
-            { name: '/rob', desc: 'Attempt to rob another user (Risky!)' },
-            { name: '/rich', desc: 'View the global wealth leaderboard' }
+            { name: '/rob', desc: 'Attempt to rob another user (Shields protect!)' },
+            { name: '/rich', desc: 'View the global wealth leaderboard' },
+            { name: '/shop', desc: 'Browse the item shop for boosts and flexes' },
+            { name: '/buy', desc: 'Purchase items from the shop' },
+            { name: '/inventory', desc: 'View your owned items' }
         ]
     },
     leveling: {
@@ -76,7 +79,8 @@ const CATEGORIES: Record<string, {
             { name: '/serverinfo', desc: 'Display detailed server information' },
             { name: '/userinfo', desc: 'Get details about a specific user' },
             { name: '/help', desc: 'Open this interactive help menu' },
-            { name: '/setup-voice', desc: 'Configure the Join-to-Create voice system' }
+            { name: '/setup-voice', desc: 'Configure the Join-to-Create voice system' },
+            { name: '/ticket-panel', desc: 'Deploy the customer support ticket panel' }
         ]
     },
     admin: {
@@ -91,6 +95,8 @@ const CATEGORIES: Record<string, {
             { name: '/config modlog', desc: 'Set the moderation logs channel' },
             { name: '/config autorole', desc: 'Set the role given to new members' },
             { name: '/config leveling', desc: 'Toggle the leveling system on/off' },
+            { name: '/config ticket-category', desc: 'Set the category for new tickets' },
+            { name: '/config ticket-logs', desc: 'Set the channel for ticket transcripts' },
             { name: '/config view', desc: 'View current server configuration' },
             { name: '/test welcome', desc: 'Simulate a welcome message event' },
             { name: '/test goodbye', desc: 'Simulate a goodbye message event' }
@@ -108,7 +114,9 @@ const CATEGORIES: Record<string, {
             { name: '🎭 Auto Role', desc: 'Instant role assignment on join' },
             { name: '📊 XP System', desc: 'Activity tracking and leveling' },
             { name: '🎉 Rank Up', desc: 'Notifications when members level up' },
-            { name: '📝 Mod Logging', desc: 'Audit logs for moderation actions' }
+            { name: '📝 Mod Logging', desc: 'Audit logs for moderation actions' },
+            { name: '🎫 Ticket System', desc: 'Private support channels with transcripts' },
+            { name: '🔊 VoiceMaster', desc: 'Temporary voice channels with control panel' }
         ]
     }
 };

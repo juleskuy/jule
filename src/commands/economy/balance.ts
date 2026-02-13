@@ -36,13 +36,28 @@ export default {
             tierEmoji = '🥇';
         }
 
+        // Calculate Net Worth
+        let assetValue = 0;
+        if (profile.inventory) {
+            const { COMM_ITEMS } = await import('../../utils/items');
+            for (const [itemId, count] of Object.entries(profile.inventory)) {
+                const item = COMM_ITEMS.find(i => i.id === itemId);
+                if (item && count > 0) {
+                    assetValue += item.price * count;
+                }
+            }
+        }
+        const netWorth = profile.balance + assetValue;
+
         const embed = new EmbedBuilder()
             .setColor(color)
             .setAuthor({ name: `${user.username}'s Wallet`, iconURL: user.displayAvatarURL() })
             .setTitle(`${tierEmoji} ${tierName} Account`)
             .setDescription(`**Account Holder:** ${user}`)
             .addFields(
-                { name: '💰 Total Balance', value: `\`\`\`css\n$${profile.balance.toLocaleString()}\n\`\`\``, inline: false },
+                { name: '💰 Cash Balance', value: `\`$${profile.balance.toLocaleString()}\``, inline: true },
+                { name: '🎒 Asset Value', value: `\`$${assetValue.toLocaleString()}\``, inline: true },
+                { name: '💎 Net Worth', value: `\`\`\`css\n$${netWorth.toLocaleString()}\n\`\`\``, inline: false },
                 { name: '📊 Statistics', value: `> **Level:** ${profile.level}\n> **XP:** ${profile.xp.toLocaleString()}`, inline: true },
                 { name: '🏆 Rank', value: `> **Tier:** ${tierName}`, inline: true }
             )

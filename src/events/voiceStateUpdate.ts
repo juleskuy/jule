@@ -1,4 +1,4 @@
-import { ChannelType, PermissionFlagsBits, VoiceState } from 'discord.js';
+import { ChannelType, PermissionFlagsBits, VoiceState, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from 'discord.js';
 import { getGuildConfig } from '../database';
 
 const voiceStateUpdate = async (oldState: VoiceState, newState: VoiceState) => {
@@ -29,7 +29,7 @@ const voiceStateUpdate = async (oldState: VoiceState, newState: VoiceState) => {
                     permissionOverwrites: [
                         {
                             id: member.id,
-                            allow: [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.MoveMembers]
+                            allow: [PermissionFlagsBits.ManageChannels, PermissionFlagsBits.MoveMembers, PermissionFlagsBits.Connect]
                         },
                         {
                             id: guild.id,
@@ -40,6 +40,33 @@ const voiceStateUpdate = async (oldState: VoiceState, newState: VoiceState) => {
 
                 // Move member to the new channel
                 await member.voice.setChannel(newChannel);
+
+                // --- VoiceMaster Interface ---
+                const embed = new EmbedBuilder()
+                    .setColor(0x2f3136)
+                    .setTitle('🎛️ Voice Interface')
+                    .setDescription(`Welcome to your temporary channel, **${member.displayName}**!\nUse the buttons below to manage your room.`)
+                    .addFields(
+                        { name: '🔒 Privacy', value: 'Lock/Unlock your room', inline: true },
+                        { name: '👻 Visibility', value: 'Hide/Unhide your room', inline: true },
+                        { name: '✏️ Edit', value: 'Rename your room', inline: true }
+                    )
+                    .setFooter({ text: 'Channel will be deleted when empty' });
+
+                const row1 = new ActionRowBuilder<ButtonBuilder>()
+                    .addComponents(
+                        new ButtonBuilder().setCustomId('vm_lock').setLabel('Lock').setEmoji('🔒').setStyle(ButtonStyle.Secondary),
+                        new ButtonBuilder().setCustomId('vm_unlock').setLabel('Unlock').setEmoji('🔓').setStyle(ButtonStyle.Secondary),
+                        new ButtonBuilder().setCustomId('vm_hide').setLabel('Hide').setEmoji('👻').setStyle(ButtonStyle.Secondary),
+                        new ButtonBuilder().setCustomId('vm_unhide').setLabel('Unhide').setEmoji('👀').setStyle(ButtonStyle.Secondary),
+                    );
+
+                const row2 = new ActionRowBuilder<ButtonBuilder>()
+                    .addComponents(
+                        new ButtonBuilder().setCustomId('vm_rename').setLabel('Rename').setEmoji('✏️').setStyle(ButtonStyle.Primary),
+                    );
+
+                await newChannel.send({ content: `Hey ${member}!`, embeds: [embed], components: [row1, row2] });
 
             } catch (error) {
                 console.error('Error creating temporary voice channel:', error);

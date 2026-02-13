@@ -49,6 +49,18 @@ export default {
         }
 
         // Logic
+        // Check for Shield
+        if (victimProfile.inventory && victimProfile.inventory['shield'] && victimProfile.inventory['shield'] > 0) {
+            victimProfile.inventory['shield']--; // Consume shield
+            updateUserProfile(interaction.guildId!, targetUser.id, {
+                inventory: victimProfile.inventory
+            });
+
+            return interaction.editReply({
+                content: `🛡️ **Robbery Failed!**\n**${targetUser.username}** used a **Shield** to block your attack! Their shield broke in the process.`
+            });
+        }
+
         const success = Math.random() > FAIL_CHANCE;
 
         if (success) {

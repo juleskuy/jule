@@ -33,19 +33,29 @@ export default {
             });
         }
 
-        const earned = Math.floor(Math.random() * (WORK_MAX - WORK_MIN + 1)) + WORK_MIN;
+        let earned = Math.floor(Math.random() * (WORK_MAX - WORK_MIN + 1)) + WORK_MIN;
         const job = JOBS[Math.floor(Math.random() * JOBS.length)];
+
+        // Coffee Boost
+        let boostMsg = '';
+        if (profile.inventory && profile.inventory['coffee'] && profile.inventory['coffee'] > 0) {
+            profile.inventory['coffee']--;
+            earned = Math.floor(earned * 1.5);
+            boostMsg = '\n☕ **Caffeine Boost!** You worked harder and earned **50% more**!';
+        }
+
         const newBalance = profile.balance + earned;
 
         updateUserProfile(interaction.guildId!, interaction.user.id, {
             balance: newBalance,
             lastWork: now,
+            inventory: profile.inventory // Save inventory change if any
         });
 
         const embed = new EmbedBuilder()
             .setColor(0x34495e) // Dark blue/grey for work
             .setTitle(`💼 Shift Completed: ${job.title}`)
-            .setDescription(`You ${job.action} and earned a paycheck!`)
+            .setDescription(`You ${job.action} and earned a paycheck!${boostMsg}`)
             .addFields(
                 { name: '💰 Earned', value: `\`+${earned} coins\``, inline: true },
                 { name: '💵 Wallet', value: `\`${newBalance.toLocaleString()} coins\``, inline: true }
