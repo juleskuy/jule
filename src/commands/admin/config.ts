@@ -76,17 +76,42 @@ export default {
 
         if (subcommand === 'view') {
             const config = getGuildConfig(interaction.guildId!);
+            const guild = interaction.guild;
 
             const embed = new EmbedBuilder()
-                .setColor(0x5865f2)
-                .setTitle('⚙️ Server Configuration')
+                .setColor(0x2b2d31) // Discord dark theme background matching
+                .setTitle(`⚙️ Configuration for ${guild?.name}`)
+                .setDescription('Here are the current settings for this server.')
                 .addFields(
-                    { name: 'Welcome Channel', value: config.welcomeChannel ? `<#${config.welcomeChannel}>` : 'Not set', inline: true },
-                    { name: 'Goodbye Channel', value: config.goodbyeChannel ? `<#${config.goodbyeChannel}>` : 'Not set', inline: true },
-                    { name: 'Mod Log Channel', value: config.modLogChannel ? `<#${config.modLogChannel}>` : 'Not set', inline: true },
-                    { name: 'Auto Role', value: config.autoRole ? `<@&${config.autoRole}>` : 'Not set', inline: true },
-                    { name: 'Leveling System', value: config.levelingEnabled ? 'Enabled' : 'Disabled', inline: true }
+                    {
+                        name: '📊 General',
+                        value: [
+                            `**Leveling System:** ${config.levelingEnabled ? '✅ Enabled' : '❌ Disabled'}`,
+                            `**Prefix:** \`${config.prefix || '!'}\``
+                        ].join('\n'),
+                        inline: false
+                    },
+                    {
+                        name: '📺 Channels',
+                        value: [
+                            `**Welcome:** ${config.welcomeChannel ? `<#${config.welcomeChannel}>` : '❌ Not set'}`,
+                            `**Goodbye:** ${config.goodbyeChannel ? `<#${config.goodbyeChannel}>` : '❌ Not set'}`,
+                            `**Mod Logs:** ${config.modLogChannel ? `<#${config.modLogChannel}>` : '❌ Not set'}`,
+                            `**Join to Create:** ${config.joinToCreateChannelId ? `<#${config.joinToCreateChannelId}>` : '❌ Not set'}`
+                        ].join('\n'),
+                        inline: true
+                    },
+                    {
+                        name: '🎭 Roles',
+                        value: [
+                            `**Auto Role:** ${config.autoRole ? `<@&${config.autoRole}>` : '❌ Not set'}`,
+                            `**Muted Role:** ${config.mutedRole ? `<@&${config.mutedRole}>` : '❌ Not set'}`
+                        ].join('\n'),
+                        inline: true
+                    }
                 )
+                .setThumbnail(guild?.iconURL() || null)
+                .setFooter({ text: 'Use /config <option> to change these settings' })
                 .setTimestamp();
 
             return interaction.reply({ embeds: [embed] });
