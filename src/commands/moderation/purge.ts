@@ -6,18 +6,10 @@ export default {
         .setName('purge')
         .setDescription('Delete multiple messages')
         .addIntegerOption(option =>
-            option
-                .setName('amount')
-                .setDescription('Number of messages to delete (1-100)')
-                .setMinValue(1)
-                .setMaxValue(100)
-                .setRequired(true)
+            option.setName('amount').setDescription('Number of messages (1-100)').setMinValue(1).setMaxValue(100).setRequired(true)
         )
         .addUserOption(option =>
-            option
-                .setName('user')
-                .setDescription('Only delete messages from this user')
-                .setRequired(false)
+            option.setName('user').setDescription('Filter by user').setRequired(false)
         ),
     category: 'moderation',
     permissions: [PermissionFlagsBits.ManageMessages],
@@ -29,7 +21,6 @@ export default {
         await interaction.deferReply({ ephemeral: true });
 
         const messages = await channel.messages.fetch({ limit: amount });
-
         let filteredMessages = messages;
         if (user) {
             filteredMessages = messages.filter(msg => msg.author.id === user.id);
@@ -38,9 +29,10 @@ export default {
         const deleted = await channel.bulkDelete(filteredMessages, true);
 
         const embed = new EmbedBuilder()
-            .setColor(0x2b2d31)
-            .setTitle('🗑️ Messages Purged')
-            .setDescription(`Successfully deleted **${deleted.size}** message(s)${user ? ` from **${user.tag}**` : ''}.`)
+            .setColor(0x2b2d31) // Black/Dark Grey
+            .setTitle('🧹 Cleanup Complete')
+            .setDescription(`Successfully purged **${deleted.size}** messages${user ? ` from ${user}` : ''}.`)
+            .setFooter({ text: `Action by ${interaction.user.tag}` })
             .setTimestamp();
 
         await interaction.editReply({ embeds: [embed] });

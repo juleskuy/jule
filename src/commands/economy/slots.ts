@@ -3,7 +3,6 @@ import { Command } from '../../types/command';
 import { getUserProfile, updateUserProfile } from '../../database';
 
 const COST = 50;
-// Using consistent emojis
 const SYMBOLS = ['🍒', '🍋', '🍇', '🍉', '🔔', '💎', '7️⃣'];
 
 export default {
@@ -15,35 +14,35 @@ export default {
         const profile = getUserProfile(interaction.guildId!, interaction.user.id);
 
         if (profile.balance < COST) {
-            await interaction.reply({ content: `❌ You need at least **${COST}** coins to play!`, ephemeral: true });
-            return;
+            return interaction.reply({ content: `🚫 **Insufficient Funds.**\nYou need **${COST} coins** to play slots.`, ephemeral: true });
         }
 
-        // Deduct cost
         const costDeductedBalance = profile.balance - COST;
         updateUserProfile(interaction.guildId!, interaction.user.id, { balance: costDeductedBalance });
 
         // Spin
-        const slots = [
-            SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-            SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-            SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]
-        ];
+        const s1 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        const s2 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        const s3 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
 
         let winnings = 0;
-        let resultText = 'Better luck next time!';
+        let title = '🎰 Better luck next time!';
+        let color = 0x95a5a6; // Grey default
 
-        // Calculate Winnings
-        if (slots[0] === slots[1] && slots[1] === slots[2]) {
-            winnings = COST * 10; // Jackpot 10x
-            resultText = '🎉 **JACKPOT!** You won big! 🎉';
-            if (slots[0] === '💎' || slots[0] === '7️⃣') {
-                winnings = COST * 20; // Super Jackpot 20x
-                resultText = '💎 **SUPER JACKPOT!** UNBELIEVABLE! 💎';
+        // Win Logic
+        if (s1 === s2 && s2 === s3) {
+            winnings = COST * 10;
+            title = '🎉 JACKPOT! Winner!';
+            color = 0x2ecc71; // Green
+            if (s1 === '💎' || s1 === '7️⃣') {
+                winnings = COST * 20;
+                title = '💎 SUPER JACKPOT! INSANE WIN!';
+                color = 0x9b59b6; // Purple/Gold epic
             }
-        } else if (slots[0] === slots[1] || slots[1] === slots[2] || slots[0] === slots[2]) {
-            winnings = Math.floor(COST * 1.5); // Small win 1.5x
-            resultText = 'Nice! Two in a row!';
+        } else if (s1 === s2 || s2 === s3 || s1 === s3) {
+            winnings = Math.floor(COST * 1.5);
+            title = '✨ Small Win!';
+            color = 0xf1c40f; // Yellow
         }
 
         if (winnings > 0) {
@@ -51,15 +50,17 @@ export default {
         }
 
         const embed = new EmbedBuilder()
-            .setColor(winnings > 0 ? 0x2ecc71 : 0xe74c3c)
-            .setTitle('🎰 Slot Machine')
-            .setDescription(`**[ ${slots.join(' | ')} ]**\n\n${resultText}`)
+            .setColor(color)
+            .setTitle(title)
+            .setDescription(`
+> **[  ${s1}  |  ${s2}  |  ${s3}  ]**
+            `)
             .addFields(
                 { name: '💰 Winnings', value: `\`${winnings}\` coins`, inline: true },
                 { name: '💵 New Balance', value: `\`${(costDeductedBalance + winnings).toLocaleString()}\``, inline: true }
             )
-            .setFooter({ text: `Cost: ${COST} coins` })
-            .setThumbnail(interaction.user.displayAvatarURL());
+            .setFooter({ text: `Bet: ${COST} coins • Jule Casino` })
+            .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });
     },

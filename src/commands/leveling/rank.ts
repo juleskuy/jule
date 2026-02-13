@@ -18,7 +18,7 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         const config = getGuildConfig(interaction.guildId!);
         if (!config.levelingEnabled) {
-            return interaction.reply({ content: '🚫 Leveling system is currently disabled for this server.', ephemeral: true });
+            return interaction.reply({ content: '🚫 **Leveling is disabled.**', ephemeral: true });
         }
 
         const user = interaction.options.getUser('user') || interaction.user;
@@ -32,31 +32,29 @@ export default {
         const xpNeeded = nextLevelXp - currentLevelXp;
         const percentage = Math.floor((xpProgress / xpNeeded) * 100);
 
-        // Enhanced progress bar with gradient effect
-        const filledBars = Math.floor((xpProgress / xpNeeded) * 20);
-        const emptyBars = 20 - filledBars;
-        const progressBar = '▰'.repeat(filledBars) + '▱'.repeat(emptyBars);
+        // Progress Bar Visual
+        // Using block characters for a smooth bar
+        const totalBars = 15;
+        const filledBars = Math.round((percentage / 100) * totalBars);
+        const emptyBars = totalBars - filledBars;
+        const progressBar = '█'.repeat(filledBars) + '░'.repeat(emptyBars);
 
-        // Rank badge based on position
-        let rankBadge = '🏅';
-        if (rank === 1) rankBadge = '👑';
-        else if (rank === 2) rankBadge = '🥈';
-        else if (rank === 3) rankBadge = '🥉';
-        else if (rank <= 10) rankBadge = '⭐';
+        let rankEmoji = '👤';
+        if (rank === 1) rankEmoji = '👑';
+        else if (rank === 2) rankEmoji = '🥈';
+        else if (rank === 3) rankEmoji = '🥉';
 
         const embed = new EmbedBuilder()
-            .setColor(0x2b2d31)
+            .setColor(0x3498db)
             .setAuthor({ name: `${user.username}'s Rank Card`, iconURL: user.displayAvatarURL() })
             .setThumbnail(user.displayAvatarURL({ size: 256 }))
-            .setDescription(`${rankBadge} **Server Rank:** \`#${rank || 'Unranked'}\`\n⭐ **Level:** \`${profile.level}\`\n✨ **Total XP:** \`${profile.xp.toLocaleString()}\``)
             .addFields(
-                {
-                    name: '📊 Level Progress',
-                    value: `\`\`\`${progressBar}\`\`\`\n**${xpProgress.toLocaleString()}** / **${xpNeeded.toLocaleString()}** XP (${percentage}%)`,
-                    inline: false
-                }
+                { name: '🏆 Rank', value: `\`#${rank || 'Unranked'}\` ${rankEmoji}`, inline: true },
+                { name: '⭐ Level', value: `\`${profile.level}\``, inline: true },
+                { name: '✨ Total XP', value: `\`${profile.xp.toLocaleString()}\``, inline: true },
+                { name: `📈 Progress to Level ${profile.level + 1}`, value: `\`${progressBar}\` **${percentage}%**\n\`${xpProgress} / ${xpNeeded} XP\``, inline: false }
             )
-            .setFooter({ text: `Keep chatting to gain XP! • ${user.tag}`, iconURL: interaction.guild?.iconURL() || undefined })
+            .setFooter({ text: 'Jule Leveling System', iconURL: interaction.client.user?.displayAvatarURL() })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

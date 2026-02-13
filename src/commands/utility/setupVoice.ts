@@ -27,10 +27,13 @@ const command: Command = {
             if (channel && channel.type === ChannelType.GuildVoice) {
                 const voiceChannel = channel as VoiceChannel;
 
-                // Check if channel is in a category
-                let warning = '';
+                // Check Category
+                let warningField = null;
                 if (!voiceChannel.parentId) {
-                    warning = '\n\n⚠️ **Note:** The selected voice channel is not in a category. Creating temporary channels might clutter your server list. It is recommended to put the generator channel inside a category.';
+                    warningField = {
+                        name: '⚠️ Configuration Warning',
+                        value: '> Input channel is **not in a category**.\n> Created channels may clutter the top of your server list. We recommend moving the generator channel inside a category first.'
+                    };
                 }
 
                 // Update Database
@@ -39,26 +42,29 @@ const command: Command = {
                 });
 
                 const embed = new EmbedBuilder()
-                    .setColor(0x2b2d31)
-                    .setTitle('✅ Join to Create Setup')
-                    .setDescription(`Successfully set up the voice creation system using **${voiceChannel.name}**!`)
+                    .setColor(0x2ecc71)
+                    .setTitle('✅ Voice System Activated')
+                    .setDescription(`The **Join to Create** system is now active!`)
                     .addFields(
-                        { name: '🎙️ Generator Channel', value: `<#${voiceChannel.id}>`, inline: true }
+                        { name: '🎙️ Generator Channel', value: `> ${voiceChannel} (\`${voiceChannel.id}\`)`, inline: false },
+                        { name: 'ℹ️ How it works', value: '> Use this channel to automatically create temporary voice channels for users.' }
                     )
+                    .setFooter({ text: 'Jule Voice Manager' })
                     .setTimestamp();
 
-                if (warning) {
-                    embed.addFields({ name: '⚠️ Warning', value: 'The selected channel is not in a category. Created channels might be unorganized.' });
+                if (warningField) {
+                    embed.addFields(warningField);
+                    embed.setColor(0xf1c40f); // Downgrade to yellow warning
                 }
 
                 await interaction.editReply({ embeds: [embed] });
             } else {
-                await interaction.editReply({ content: '❌ Invalid channel type. Please select a voice channel.' });
+                await interaction.editReply({ content: '🚫 **Invalid Channel.** Please select a valid voice channel.' });
             }
 
         } catch (error) {
             console.error('Error setting up voice system:', error);
-            await interaction.editReply({ content: '❌ An error occurred while setting up the voice system.' });
+            await interaction.editReply({ content: '❌ **System Error.** Could not save configuration.' });
         }
     }
 };

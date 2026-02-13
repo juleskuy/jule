@@ -1,6 +1,12 @@
-import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ChannelType, ChatInputCommandInteraction } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ChannelType, ChatInputCommandInteraction, ColorResolvable } from 'discord.js';
 import { Command } from '../../types/command';
 import { updateGuildConfig, getGuildConfig } from '../../database';
+
+const THEME = {
+    SUCCESS: 0x2ecc71 as ColorResolvable,
+    ERROR: 0xe74c3c as ColorResolvable,
+    NEUTRAL: 0x2b2d31 as ColorResolvable
+};
 
 export default {
     data: new SlashCommandBuilder()
@@ -79,72 +85,93 @@ export default {
             const guild = interaction.guild;
 
             const embed = new EmbedBuilder()
-                .setColor(0x2b2d31) // Discord dark theme background matching
-                .setTitle(`⚙️ Configuration for ${guild?.name}`)
-                .setDescription('Here are the current settings for this server.')
+                .setColor(THEME.NEUTRAL)
+                .setAuthor({ name: `Server Configuration`, iconURL: guild?.iconURL() || undefined })
+                .setTitle(`⚙️ Settings for ${guild?.name}`)
+                .setDescription('Below is the current configuration for your server. Use the `/config` commands to modify these settings.')
                 .addFields(
                     {
-                        name: '📊 General',
+                        name: '📊 General Settings',
                         value: [
-                            `**Leveling System:** ${config.levelingEnabled ? '✅ Enabled' : '❌ Disabled'}`,
-                            `**Prefix:** \`${config.prefix || '!'}\``
-                        ].join('\n'),
+                            `> **Leveling System**\n> ${config.levelingEnabled ? '✅ **Enabled**' : '❌ **Disabled**'}`,
+                            `> **Command Prefix**\n> \`${config.prefix || '!'}\``
+                        ].join('\n\n'),
+                        inline: true
+                    },
+                    {
+                        name: '📺 Channel Configuration',
+                        value: [
+                            `> **Welcome Channel**\n> ${config.welcomeChannel ? `<#${config.welcomeChannel}>` : '`Not Set`'}`,
+                            `> **Goodbye Channel**\n> ${config.goodbyeChannel ? `<#${config.goodbyeChannel}>` : '`Not Set`'}`,
+                            `> **Mod Logs**\n> ${config.modLogChannel ? `<#${config.modLogChannel}>` : '`Not Set`'}`,
+                            `> **Join to Create**\n> ${config.joinToCreateChannelId ? `<#${config.joinToCreateChannelId}>` : '`Not Set`'}`
+                        ].join('\n\n'),
+                        inline: true
+                    },
+                    {
+                        name: '🎭 Role Configuration',
+                        value: [
+                            `> **Auto Role**\n> ${config.autoRole ? `<@&${config.autoRole}>` : '`Not Set`'}`,
+                            `> **Muted Role**\n> ${config.mutedRole ? `<@&${config.mutedRole}>` : '`Not Set`'}`
+                        ].join('\n\n'),
                         inline: false
-                    },
-                    {
-                        name: '📺 Channels',
-                        value: [
-                            `**Welcome:** ${config.welcomeChannel ? `<#${config.welcomeChannel}>` : '❌ Not set'}`,
-                            `**Goodbye:** ${config.goodbyeChannel ? `<#${config.goodbyeChannel}>` : '❌ Not set'}`,
-                            `**Mod Logs:** ${config.modLogChannel ? `<#${config.modLogChannel}>` : '❌ Not set'}`,
-                            `**Join to Create:** ${config.joinToCreateChannelId ? `<#${config.joinToCreateChannelId}>` : '❌ Not set'}`
-                        ].join('\n'),
-                        inline: true
-                    },
-                    {
-                        name: '🎭 Roles',
-                        value: [
-                            `**Auto Role:** ${config.autoRole ? `<@&${config.autoRole}>` : '❌ Not set'}`,
-                            `**Muted Role:** ${config.mutedRole ? `<@&${config.mutedRole}>` : '❌ Not set'}`
-                        ].join('\n'),
-                        inline: true
                     }
                 )
                 .setThumbnail(guild?.iconURL() || null)
-                .setFooter({ text: 'Use /config <option> to change these settings' })
+                .setFooter({ text: 'Administrator Access Required • Jule Bot', iconURL: interaction.client.user?.displayAvatarURL() })
                 .setTimestamp();
 
             return interaction.reply({ embeds: [embed] });
         }
 
         let message = '';
+        let settingName = '';
+        let settingValue = '';
 
         if (subcommand === 'welcome') {
             const channel = interaction.options.getChannel('channel', true);
-            updateGuildConfig(interaction.guildId!, { welcomeChannel: channel.id });
-            message = `Welcome channel set to ${channel}`;
+            if (channel && channel.type === ChannelType.GuildText) {
+                updateGuildConfig(interaction.guildId!, { welcomeChannel: channel.id });
+                settingName = 'Welcome Channel';
+                settingValue = `${channel}`;
+                message = `Welcome messages will now be sent to ${channel}`;
+            }
         } else if (subcommand === 'goodbye') {
             const channel = interaction.options.getChannel('channel', true);
-            updateGuildConfig(interaction.guildId!, { goodbyeChannel: channel.id });
-            message = `Goodbye channel set to ${channel}`;
+            if (channel && channel.type === ChannelType.GuildText) {
+                updateGuildConfig(interaction.guildId!, { goodbyeChannel: channel.id });
+                settingName = 'Goodbye Channel';
+                settingValue = `${channel}`;
+                message = `Goodbye messages will now be sent to ${channel}`;
+            }
         } else if (subcommand === 'modlog') {
             const channel = interaction.options.getChannel('channel', true);
-            updateGuildConfig(interaction.guildId!, { modLogChannel: channel.id });
-            message = `Moderation log channel set to ${channel}`;
+            if (channel && channel.type === ChannelType.GuildText) {
+                updateGuildConfig(interaction.guildId!, { modLogChannel: channel.id });
+                settingName = 'Mod Log Channel';
+                settingValue = `${channel}`;
+                message = `Moderation logs will be recorded in ${channel}`;
+            }
         } else if (subcommand === 'autorole') {
             const role = interaction.options.getRole('role', true);
             updateGuildConfig(interaction.guildId!, { autoRole: role.id });
-            message = `Auto role set to ${role}`;
+            settingName = 'Auto Role';
+            settingValue = `${role}`;
+            message = `New members will automatically receive the **${role.name}** role`;
         } else if (subcommand === 'leveling') {
             const enabled = interaction.options.getBoolean('enabled', true);
             updateGuildConfig(interaction.guildId!, { levelingEnabled: enabled });
-            message = `Leveling system has been ${enabled ? 'enabled' : 'disabled'}`;
+            settingName = 'Leveling System';
+            settingValue = enabled ? '✅ Enabled' : '❌ Disabled';
+            message = `The leveling system has been **${enabled ? 'enabled' : 'disabled'}** for this server`;
         }
 
         const embed = new EmbedBuilder()
-            .setColor(0x00ff00)
+            .setColor(THEME.SUCCESS)
             .setTitle('✅ Configuration Updated')
             .setDescription(message)
+            .addFields({ name: '🛠️ Setting Changed', value: `**${settingName}** → ${settingValue}`, inline: false })
+            .setFooter({ text: `Updated by ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL() })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

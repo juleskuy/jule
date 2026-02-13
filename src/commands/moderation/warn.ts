@@ -7,16 +7,10 @@ export default {
         .setName('warn')
         .setDescription('Warn a user')
         .addUserOption(option =>
-            option
-                .setName('user')
-                .setDescription('The user to warn')
-                .setRequired(true)
+            option.setName('user').setDescription('The user to warn').setRequired(true)
         )
         .addStringOption(option =>
-            option
-                .setName('reason')
-                .setDescription('The reason for the warning')
-                .setRequired(true)
+            option.setName('reason').setDescription('The reason for warning').setRequired(true)
         ),
     category: 'moderation',
     permissions: [PermissionFlagsBits.ModerateMembers],
@@ -25,17 +19,17 @@ export default {
         const reason = interaction.options.getString('reason', true);
         const guildId = interaction.guildId!;
 
-        const warning = {
+        // Add Warning
+        addWarning({
             id: `${Date.now()}-${user.id}`,
             userId: user.id,
             guildId,
             moderatorId: interaction.user.id,
             reason,
             timestamp: Date.now(),
-        };
+        });
 
-        addWarning(warning);
-
+        // Add Case
         const caseId = getNextCaseId(guildId);
         addCase({
             caseId,
@@ -47,19 +41,30 @@ export default {
             timestamp: Date.now(),
         });
 
+        // Notify User
+        const dmEmbed = new EmbedBuilder()
+            .setColor(0xf39c12) // Orange-Gold
+            .setTitle(`⚠️ Warning Received in ${interaction.guild?.name}`)
+            .setDescription(`**Moderator:** ${interaction.user.tag}\n**Reason:** ${reason}`)
+            .setFooter({ text: 'Please follow the server rules.' })
+            .setTimestamp();
+        await user.send({ embeds: [dmEmbed] }).catch(() => { });
+
+        // Get total warnings for display
         const warnings = getUserWarnings(guildId, user.id);
 
         const embed = new EmbedBuilder()
-            .setColor(0x2b2d31)
+            .setColor(0xf39c12)
             .setTitle('⚠️ User Warned')
-            .addFields(
-                { name: '👤 User', value: `\`${user.tag}\``, inline: true },
-                { name: '🛡️ Moderator', value: `\`${interaction.user.tag}\``, inline: true },
-                { name: '📄 Case ID', value: `\`#${caseId}\``, inline: true },
-                { name: '📝 Reason', value: reason },
-                { name: '❗ Total Warnings', value: `\`${warnings.length}\``, inline: true }
-            )
             .setThumbnail(user.displayAvatarURL())
+            .addFields(
+                { name: '👤 User', value: `${user} (\`${user.id}\`)`, inline: false },
+                { name: '🛡️ Moderator', value: `${interaction.user}`, inline: true },
+                { name: '📄 Case ID', value: `\`#${caseId}\``, inline: true },
+                { name: '❗ Total Warnings', value: `\`${warnings.length}\``, inline: true },
+                { name: '📝 Reason', value: `\`\`\`${reason}\`\`\``, inline: false }
+            )
+            .setFooter({ text: 'Moderation Action • Jule Bot', iconURL: interaction.client.user?.displayAvatarURL() })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

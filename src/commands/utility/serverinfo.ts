@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ChannelType } from 'discord.js';
 import { Command } from '../../types/command';
 
 export default {
@@ -10,28 +10,51 @@ export default {
         const guild = interaction.guild;
 
         if (!guild) {
-            return interaction.reply({
-                content: '❌ This command can only be used in a server.',
-                ephemeral: true,
-            });
+            return interaction.reply({ content: '🚫 **Server only command.**', ephemeral: true });
         }
+
+        const owner = await guild.fetchOwner().catch(() => null);
+        const roles = guild.roles.cache.size;
+        const emojis = guild.emojis.cache.size;
+
+        // Channel counts
+        const totalChannels = guild.channels.cache.size;
+        const textChannels = guild.channels.cache.filter(c => c.type === ChannelType.GuildText).size;
+        const voiceChannels = guild.channels.cache.filter(c => c.type === ChannelType.GuildVoice).size;
 
         const embed = new EmbedBuilder()
             .setColor(0x2b2d31)
-            .setTitle(`${guild.name} Information`)
-            .setThumbnail(guild.iconURL() || '')
+            .setTitle(`📊 Server Info: ${guild.name}`)
+            .setThumbnail(guild.iconURL({ size: 512 }) || null)
+            .setImage(guild.bannerURL({ size: 1024 }) || null) // Add banner if available
             .addFields(
-                { name: '📋 Server ID', value: `\`${guild.id}\``, inline: true },
-                { name: '👑 Owner', value: `<@${guild.ownerId}>`, inline: true },
-                { name: '📅 Created', value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:R>`, inline: true },
-                { name: '👥 Members', value: `\`${guild.memberCount}\``, inline: true },
-                { name: '📝 Channels', value: `\`${guild.channels.cache.size}\``, inline: true },
-                { name: '🎭 Roles', value: `\`${guild.roles.cache.size}\``, inline: true },
-                { name: '😀 Emojis', value: `\`${guild.emojis.cache.size}\``, inline: true },
-                { name: '🚀 Boost Level', value: `\`Level ${guild.premiumTier}\``, inline: true },
-                { name: '💎 Boost Count', value: `\`${guild.premiumSubscriptionCount || 0} boosts\``, inline: true }
+                {
+                    name: '🆔 Identification',
+                    value: `> **ID:** \`${guild.id}\`\n> **Owner:** ${owner ? owner : 'Unknown'}`,
+                    inline: false
+                },
+                {
+                    name: '📅 History',
+                    value: `> Created <t:${Math.floor(guild.createdTimestamp / 1000)}:R>`,
+                    inline: false
+                },
+                {
+                    name: '👥 Membership',
+                    value: `> **Total:** \`${guild.memberCount}\`\n> **Boosts:** \`${guild.premiumSubscriptionCount || 0}\` (Level ${guild.premiumTier})`,
+                    inline: true
+                },
+                {
+                    name: '💬 Channels',
+                    value: `> **Total:** \`${totalChannels}\`\n> **Text:** \`${textChannels}\` | **Voice:** \`${voiceChannels}\``,
+                    inline: true
+                },
+                {
+                    name: '🎭 Assets',
+                    value: `> **Roles:** \`${roles}\`\n> **Emojis:** \`${emojis}\`\n> **Stickers:** \`${guild.stickers.cache.size}\``,
+                    inline: true
+                }
             )
-            .setFooter({ text: `Requested by ${interaction.user.tag}` })
+            .setFooter({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

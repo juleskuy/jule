@@ -21,10 +21,12 @@ export default {
             const seconds = Math.floor((timeLeft % 60000) / 1000);
 
             const embed = new EmbedBuilder()
-                .setColor(0x2b2d31)
-                .setTitle('⏰ Daily Reward Cooldown')
-                .setDescription(`You've already claimed your daily reward!\n\n⏳ **Come back in:**\n\`\`\`${hours}h ${minutes}m ${seconds}s\`\`\``)
-                .setFooter({ text: 'Daily rewards reset every 24 hours' })
+                .setColor(0xe74c3c) // Red for fail/wait
+                .setAuthor({ name: 'Daily Reward Status', iconURL: interaction.user.displayAvatarURL() })
+                .setTitle('⏳ Claim Cooldown')
+                .setDescription(`You've already claimed your daily reward!\n\nPlease return in:`)
+                .addFields({ name: '⏱️ Time Remaining', value: `\`\`\`bash\n${hours}h ${minutes}m ${seconds}s\n\`\`\``, inline: false })
+                .setFooter({ text: 'Rewards reset every 24 hours' })
                 .setTimestamp();
 
             return interaction.reply({ embeds: [embed], ephemeral: true });
@@ -36,12 +38,18 @@ export default {
             lastDaily: now,
         });
 
+        // Determine a simple streak visual (even if we don't track streak strictly yet, we can hype it up)
         const embed = new EmbedBuilder()
-            .setColor(0x2b2d31)
-            .setTitle('🎁 Daily Reward Claimed!')
-            .setDescription(`Congratulations! You've received your daily bonus!\n\n💰 **Earned:** \`${DAILY_AMOUNT} coins\`\n💵 **New Balance:** \`${newBalance.toLocaleString()} coins\``)
-            .setThumbnail(interaction.user.displayAvatarURL({ size: 128 }))
-            .setFooter({ text: `Streak maintained! • ${interaction.user.tag}` })
+            .setColor(0x2ecc71) // Green for success
+            .setAuthor({ name: 'Daily Login Bonus', iconURL: interaction.user.displayAvatarURL() })
+            .setTitle('🎁 Reward Claimed!')
+            .setDescription('Here is your daily allowance! Come back tomorrow for more.')
+            .setThumbnail('https://em-content.zobj.net/source/microsoft-teams/337/wrapped-gift_1f381.png') // Gift emoji large
+            .addFields(
+                { name: '💰 Amount', value: `\`+${DAILY_AMOUNT} coins\``, inline: true },
+                { name: '💳 New Balance', value: `\`${newBalance.toLocaleString()} coins\``, inline: true }
+            )
+            .setFooter({ text: 'Daily Reward System • Jule Bot', iconURL: interaction.client.user?.displayAvatarURL() })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

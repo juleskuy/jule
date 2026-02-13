@@ -6,15 +6,13 @@ const WORK_MIN = 50;
 const WORK_MAX = 150;
 const WORK_COOLDOWN = 3600000; // 1 hour
 
-const WORK_JOBS = [
-    { title: '💻 Software Developer', emoji: '👨‍💻' },
-    { title: '🍔 Food Delivery', emoji: '🛵' },
-    { title: '🎮 Twitch Streamer', emoji: '📺' },
-    { title: '🎨 Content Creator', emoji: '🎬' },
-    { title: '🎵 Musician', emoji: '🎸' },
-    { title: '📝 Freelance Writer', emoji: '✍️' },
-    { title: '🏗️ Construction Worker', emoji: '👷' },
-    { title: '🎭 Voice Actor', emoji: '🎤' },
+const JOBS = [
+    { title: 'Software Developer', emoji: '💻', action: 'coded a new feature' },
+    { title: 'Food Courier', emoji: '🍔', action: 'delivered 15 orders' },
+    { title: 'Streamer', emoji: '📺', action: 'streamed for 4 hours' },
+    { title: 'Artist', emoji: '🎨', action: 'completed a commission' },
+    { title: 'Barista', emoji: '☕', action: 'served 100 coffees' },
+    { title: 'Construction Worker', emoji: '🏗️', action: 'built a wall' }
 ];
 
 export default {
@@ -29,20 +27,14 @@ export default {
         if (profile.lastWork && now - profile.lastWork < WORK_COOLDOWN) {
             const timeLeft = WORK_COOLDOWN - (now - profile.lastWork);
             const minutes = Math.floor(timeLeft / 60000);
-            const seconds = Math.floor((timeLeft % 60000) / 1000);
-
-            const embed = new EmbedBuilder()
-                .setColor(0x2b2d31)
-                .setTitle('😴 You\'re Tired!')
-                .setDescription(`You need to rest before working again!\n\n⏳ **Rest time remaining:**\n\`\`\`${minutes}m ${seconds}s\`\`\``)
-                .setFooter({ text: 'Work cooldown resets every hour' })
-                .setTimestamp();
-
-            return interaction.reply({ embeds: [embed], ephemeral: true });
+            return interaction.reply({
+                content: `⏳ **You are recharging!**\nYou can work again in **${minutes}m**. Take a break!`,
+                ephemeral: true
+            });
         }
 
         const earned = Math.floor(Math.random() * (WORK_MAX - WORK_MIN + 1)) + WORK_MIN;
-        const job = WORK_JOBS[Math.floor(Math.random() * WORK_JOBS.length)];
+        const job = JOBS[Math.floor(Math.random() * JOBS.length)];
         const newBalance = profile.balance + earned;
 
         updateUserProfile(interaction.guildId!, interaction.user.id, {
@@ -51,11 +43,15 @@ export default {
         });
 
         const embed = new EmbedBuilder()
-            .setColor(0x2b2d31)
-            .setTitle('💼 Work Complete!')
-            .setDescription(`${job.emoji} You worked as a **${job.title}**!\n\n💰 **Earned:** \`${earned} coins\`\n💵 **New Balance:** \`${newBalance.toLocaleString()} coins\``)
-            .setThumbnail(interaction.user.displayAvatarURL({ size: 128 }))
-            .setFooter({ text: `Great job! • ${interaction.user.tag}` })
+            .setColor(0x34495e) // Dark blue/grey for work
+            .setTitle(`💼 Shift Completed: ${job.title}`)
+            .setDescription(`You ${job.action} and earned a paycheck!`)
+            .addFields(
+                { name: '💰 Earned', value: `\`+${earned} coins\``, inline: true },
+                { name: '💵 Wallet', value: `\`${newBalance.toLocaleString()} coins\``, inline: true }
+            )
+            .setThumbnail('https://em-content.zobj.net/source/microsoft-teams/337/briefcase_1f4bc.png')
+            .setFooter({ text: `Great work, ${interaction.user.username}!`, iconURL: interaction.user.displayAvatarURL() })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

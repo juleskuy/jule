@@ -11,27 +11,33 @@ export default {
         const topUsers = getRichList(interaction.guildId!, 10);
 
         if (topUsers.length === 0) {
-            await interaction.reply({ content: '❌ No data available yet!', ephemeral: true });
-            return;
-        }
-
-        const description: string[] = [];
-
-        for (let i = 0; i < topUsers.length; i++) {
-            const profile = topUsers[i];
-            const user = await interaction.client.users.fetch(profile.userId).catch(() => null);
-            const username = user ? user.username : 'Unknown User';
-            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `\`${String(i + 1).padStart(2, '0')}\``;
-
-            description.push(`${medal} **${username}**\n┗━ 💰 \`${profile.balance.toLocaleString()} coins\``);
+            return interaction.reply({ content: '🚫 **No data available yet!** Start earning coins with `/daily` and `/work`.', ephemeral: true });
         }
 
         const embed = new EmbedBuilder()
-            .setColor(0xffd700)
-            .setTitle('💎 Richest Users')
-            .setDescription(description.join('\n\n'))
-            .setFooter({ text: `Top ${topUsers.length} wealthiest members` })
+            .setColor(0xffd700) // Gold for leaderboard
+            .setTitle('🏆 Top 10 Wealthiest Members')
+            .setDescription('Who rules the economy? Here are the richest users!')
+            .setFooter({ text: `Total tracked users: ${topUsers.length}` })
             .setTimestamp();
+
+        // Build Leaderboard Content
+        let boardContent = '';
+        for (let i = 0; i < topUsers.length; i++) {
+            const profile = topUsers[i];
+            const user = await interaction.client.users.fetch(profile.userId).catch(() => null);
+            const username = user ? user.username : 'Hidden User';
+
+            // Medals for top 3
+            let rankDisplay = `\`#${i + 1}\``;
+            if (i === 0) rankDisplay = '🥇 **#1**';
+            if (i === 1) rankDisplay = '🥈 **#2**';
+            if (i === 2) rankDisplay = '🥉 **#3**';
+
+            boardContent += `${rankDisplay} — **${username}**\n> 💰 \`${profile.balance.toLocaleString()} coins\`\n\n`;
+        }
+
+        embed.setDescription(boardContent);
 
         await interaction.reply({ embeds: [embed] });
     },
