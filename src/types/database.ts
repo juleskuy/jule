@@ -7,6 +7,7 @@ export interface GuildConfig {
     autoRole?: string;
     mutedRole?: string;
     levelingEnabled?: boolean;
+    joinToCreateChannelId?: string;
 }
 
 export interface UserProfile {
