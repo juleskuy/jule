@@ -2,6 +2,7 @@ import { Client, GatewayIntentBits, Collection } from 'discord.js';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import http from 'http';
 import { ExtendedClient } from './types/client';
 import { Command } from './types/command';
 
@@ -62,11 +63,23 @@ const loadEvents = () => {
 loadCommands();
 loadEvents();
 
+// Health Check Server for Railway
+const server = http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end('Bot is running!');
+});
+
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+    console.log(`🚀 Health check server listening on port ${PORT}`);
+});
 
 process.on('SIGTERM', () => {
     console.log('Received SIGTERM signal. Shutting down gracefully...');
     client.destroy();
-    process.exit(0);
+    server.close(() => {
+        process.exit(0);
+    });
 });
 
 client.login(process.env.BOT_TOKEN);
