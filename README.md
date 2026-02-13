@@ -1,6 +1,6 @@
 # jule - Powerful Discord Bot
 
-A feature-rich Discord bot built with discord.js v14 and TypeScript featuring moderation, economy, leveling, and fun commands with beautiful, premium aesthetics.
+A feature-rich Discord bot built with discord.js v14 and TypeScript featuring moderation, economy, leveling, and fun commands.
 
 ## ✨ Features
 
