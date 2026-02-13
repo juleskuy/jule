@@ -62,4 +62,11 @@ const loadEvents = () => {
 loadCommands();
 loadEvents();
 
+
+process.on('SIGTERM', () => {
+    console.log('Received SIGTERM signal. Shutting down gracefully...');
+    client.destroy();
+    process.exit(0);
+});
+
 client.login(process.env.BOT_TOKEN);
