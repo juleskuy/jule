@@ -198,15 +198,33 @@ function mapUserProfile(p: any): UserProfile {
 
 /**
  * Database Warmup: Railway puts databases to sleep after inactivity.
- * This pings the DB during bot startup to wake it up.
+ * This pings the DB during bot startup to wake it up with retries.
  */
 export async function hibernateCheck(): Promise<void> {
+    const MAX_RETRIES = 5;
+    const RETRY_DELAY = 5000; // 5 seconds
+
     console.log('🔄 [Database] Waking up database...');
-    try {
-        // Simple light query to wake up Postgres
-        await prisma.$queryRaw`SELECT 1`;
-        console.log('✅ [Database] Connection established and database is awake.');
-    } catch (error) {
-        console.error('❌ [Database] Failed to wake up database:', error);
+
+    for (let i = 1; i <= MAX_RETRIES; i++) {
+        try {
+            // Simple light query to wake up Postgres
+            await prisma.$queryRaw`SELECT 1`;
+            console.log('✅ [Database] Connection established and database is awake.');
+            return;
+        } catch (error: any) {
+            const isConnectionError =
+                error.message?.includes('closed the connection') ||
+                error.message?.includes('ConnectionClosed') ||
+                error.code === 'P2010';
+
+            if (isConnectionError && i < MAX_RETRIES) {
+                console.warn(`⏳ [Database] Attempt ${i}/${MAX_RETRIES}: Database is waking up... retrying in ${RETRY_DELAY / 1000}s`);
+                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+            } else {
+                console.error(`❌ [Database] Failed to wake up database after ${i} attempts:`, error);
+                break;
+            }
+        }
     }
 }
