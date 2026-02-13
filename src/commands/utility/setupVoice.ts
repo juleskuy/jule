@@ -37,7 +37,7 @@ const command: Command = {
                 }
 
                 // Update Database
-                updateGuildConfig(interaction.guild.id, {
+                await updateGuildConfig(interaction.guild.id, {
                     joinToCreateChannelId: voiceChannel.id
                 });
 

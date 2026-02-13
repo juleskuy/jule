@@ -20,7 +20,7 @@ export default {
     permissions: [PermissionFlagsBits.Administrator],
     async execute(interaction: ChatInputCommandInteraction) {
         const subcommand = interaction.options.getSubcommand();
-        const config = getGuildConfig(interaction.guildId!);
+        const config = await getGuildConfig(interaction.guildId!);
         const guild = interaction.guild;
         const user = interaction.user;
 

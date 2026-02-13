@@ -7,7 +7,7 @@ const voiceStateUpdate = async (oldState: VoiceState, newState: VoiceState) => {
 
     if (!member || !guild) return;
 
-    const guildConfig = getGuildConfig(guild.id);
+    const guildConfig = await getGuildConfig(guild.id);
     if (!guildConfig || !guildConfig.joinToCreateChannelId) return;
 
     const generatorChannelId = guildConfig.joinToCreateChannelId;

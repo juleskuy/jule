@@ -4,7 +4,7 @@ import { getGuildConfig } from '../database';
 export default {
     name: Events.GuildMemberRemove,
     async execute(member: GuildMember) {
-        const config = getGuildConfig(member.guild.id);
+        const config = await getGuildConfig(member.guild.id);
 
         if (config.goodbyeChannel) {
             const channel = member.guild.channels.cache.get(config.goodbyeChannel);

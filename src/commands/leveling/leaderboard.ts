@@ -8,12 +8,12 @@ export default {
         .setDescription('View the server leaderboard'),
     category: 'leveling',
     async execute(interaction: ChatInputCommandInteraction) {
-        const config = getGuildConfig(interaction.guildId!);
+        const config = await getGuildConfig(interaction.guildId!);
         if (!config.levelingEnabled) {
             return interaction.reply({ content: '🚫 **Leveling is disabled.**\nAsk an admin to enable it using `/config leveling`.', ephemeral: true });
         }
 
-        const leaderboard = getLeaderboard(interaction.guildId!, 10);
+        const leaderboard = await getLeaderboard(interaction.guildId!, 10);
 
         if (leaderboard.length === 0) {
             return interaction.reply({ content: '📉 **Leaderboard is empty.**\nStart chatting to be the first one here!', ephemeral: true });

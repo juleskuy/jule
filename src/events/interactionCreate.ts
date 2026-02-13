@@ -101,7 +101,7 @@ export default {
 
                 if (interaction.customId === 'create_ticket') {
                     const { getGuildConfig } = await import('../database');
-                    const config = getGuildConfig(interaction.guildId!);
+                    const config = await getGuildConfig(interaction.guildId!);
                     const categoryId = config.ticketCategoryId;
 
                     if (!categoryId) {
@@ -164,7 +164,7 @@ export default {
 
                     // Generate Transcript & Log
                     const { getGuildConfig } = await import('../database');
-                    const config = getGuildConfig(interaction.guildId!);
+                    const config = await getGuildConfig(interaction.guildId!);
                     const discordTranscripts = await import('discord-html-transcripts');
 
                     const attachment = await discordTranscripts.createTranscript(channel, {

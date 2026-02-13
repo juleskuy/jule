@@ -4,7 +4,7 @@ import { getGuildConfig } from '../database';
 export default {
     name: Events.GuildMemberAdd,
     async execute(member: GuildMember) {
-        const config = getGuildConfig(member.guild.id);
+        const config = await getGuildConfig(member.guild.id);
 
         if (config.autoRole) {
             try {
