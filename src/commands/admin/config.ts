@@ -93,8 +93,7 @@ export default {
                     {
                         name: '📊 General Settings',
                         value: [
-                            `> **Leveling System**\n> ${config.levelingEnabled ? '✅ **Enabled**' : '❌ **Disabled**'}`,
-                            `> **Command Prefix**\n> \`${config.prefix || '!'}\``
+                            `> **Leveling System**\n> ${config.levelingEnabled ? '✅ **Enabled**' : '❌ **Disabled**'}`
                         ].join('\n\n'),
                         inline: true
                     },

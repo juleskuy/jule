@@ -41,14 +41,18 @@ export default {
 
         const embed = new EmbedBuilder()
             .setColor(choice.color)
-            .setTitle(`${choice.emoji} The Magic 8-Ball has spoken!`)
-            .addFields(
-                { name: '❓ Question', value: `\`${question}\``, inline: false },
-                { name: '🎱 Answer', value: `> **${choice.text}**`, inline: false }
-            )
+            .setAuthor({ name: 'The Magic 8-Ball', iconURL: 'https://em-content.zobj.net/source/microsoft-teams/337/pool-8-ball_1f3b1.png' })
+            .setTitle(choice.emoji + ' ' + choice.text)
+            .setDescription(`**Question:** ${question}`)
             .setFooter({ text: `Asked by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL() })
             .setTimestamp();
 
-        await interaction.reply({ embeds: [embed] });
+        // Use a "thinking" animation with editReply to build suspense
+        await interaction.deferReply();
+
+        // Optional: wait a tiny bit to simulate "divining" the answer
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        await interaction.editReply({ embeds: [embed] });
     },
 } as Command;

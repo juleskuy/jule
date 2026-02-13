@@ -1,6 +1,5 @@
 export interface GuildConfig {
     guildId: string;
-    prefix: string;
     modLogChannel?: string;
     welcomeChannel?: string;
     goodbyeChannel?: string;

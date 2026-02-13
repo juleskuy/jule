@@ -59,6 +59,8 @@ const CATEGORIES: Record<string, {
         embedTitle: '🎮 Fun & Games',
         embedDesc: 'Take a break and enjoy some entertainment commands.',
         commands: [
+            { name: '/rps', desc: 'Play Rock, Paper, Scissors (Solo or PvP)' },
+            { name: '/meme', desc: 'View a random meme or tech joke' },
             { name: '/8ball', desc: 'Ask the magic 8ball a question' },
             { name: '/coinflip', desc: 'Flip a coin to settle a debate' }
         ]
