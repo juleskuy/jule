@@ -195,3 +195,18 @@ function mapUserProfile(p: any): UserProfile {
         inventory: p.inventory as { [itemId: string]: number } | undefined
     };
 }
+
+/**
+ * Database Warmup: Railway puts databases to sleep after inactivity.
+ * This pings the DB during bot startup to wake it up.
+ */
+export async function hibernateCheck(): Promise<void> {
+    console.log('🔄 [Database] Waking up database...');
+    try {
+        // Simple light query to wake up Postgres
+        await prisma.$queryRaw`SELECT 1`;
+        console.log('✅ [Database] Connection established and database is awake.');
+    } catch (error) {
+        console.error('❌ [Database] Failed to wake up database:', error);
+    }
+}
