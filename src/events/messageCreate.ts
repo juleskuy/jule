@@ -12,7 +12,7 @@ export default {
     async execute(message: Message) {
         if (message.author.bot || !message.guild) return;
 
-        const config = getGuildConfig(message.guild.id);
+        const config = await getGuildConfig(message.guild.id);
         if (!config.levelingEnabled) return;
 
         const key = `${message.guild.id}-${message.author.id}`;
@@ -23,12 +23,12 @@ export default {
 
         cooldowns.set(key, now + XP_COOLDOWN);
 
-        const profile = getUserProfile(message.guild.id, message.author.id);
+        const profile = await getUserProfile(message.guild.id, message.author.id);
         const xpGain = Math.floor(Math.random() * (XP_MAX - XP_MIN + 1)) + XP_MIN;
         const newXp = profile.xp + xpGain;
         const newLevel = Math.floor(newXp / XP_PER_LEVEL);
 
-        updateUserProfile(message.guild.id, message.author.id, {
+        await updateUserProfile(message.guild.id, message.author.id, {
             xp: newXp,
             level: newLevel,
         });

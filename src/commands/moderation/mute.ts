@@ -30,7 +30,7 @@ export default {
             return interaction.reply({ content: '🚫 **Permission Error.** I cannot timeout this user.', ephemeral: true });
         }
 
-        const caseId = getNextCaseId(interaction.guildId!);
+        const caseId = await getNextCaseId(interaction.guildId!);
         const durationMs = duration * 60 * 1000;
 
         try {
@@ -46,7 +46,7 @@ export default {
             await user.send({ embeds: [dmEmbed] }).catch(() => { });
 
 
-            addCase({
+            await addCase({
                 caseId,
                 guildId: interaction.guildId!,
                 userId: user.id,
@@ -57,7 +57,7 @@ export default {
                 duration: durationMs,
             });
 
-            addTempMute({
+            await addTempMute({
                 userId: user.id,
                 guildId: interaction.guildId!,
                 endTime: Date.now() + durationMs,

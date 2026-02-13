@@ -27,7 +27,7 @@ export default {
             return interaction.reply({ content: '🚫 **Permission Error.** I cannot ban this user.', ephemeral: true });
         }
 
-        const caseId = getNextCaseId(interaction.guildId!);
+        const caseId = await getNextCaseId(interaction.guildId!);
 
         try {
             // Try to DM the user first
@@ -42,7 +42,7 @@ export default {
 
             await interaction.guild?.members.ban(user, { reason, deleteMessageSeconds: deleteDays * 86400 });
 
-            addCase({
+            await addCase({
                 caseId,
                 guildId: interaction.guildId!,
                 userId: user.id,

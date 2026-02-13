@@ -15,7 +15,7 @@ export default {
     category: 'economy',
     async execute(interaction: ChatInputCommandInteraction) {
         const user = interaction.options.getUser('user') || interaction.user;
-        const profile = getUserProfile(interaction.guildId!, user.id);
+        const profile = await getUserProfile(interaction.guildId!, user.id);
 
         // Determine wealth tier for color and badge
         let color = 0x95a5a6; // Silver
@@ -40,7 +40,8 @@ export default {
         let assetValue = 0;
         if (profile.inventory) {
             const { COMM_ITEMS } = await import('../../utils/items');
-            for (const [itemId, count] of Object.entries(profile.inventory)) {
+            for (const [itemId, rawCount] of Object.entries(profile.inventory)) {
+                const count = rawCount as number;
                 const item = COMM_ITEMS.find(i => i.id === itemId);
                 if (item && count > 0) {
                     assetValue += item.price * count;

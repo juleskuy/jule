@@ -23,8 +23,8 @@ export default {
 
         await interaction.deferReply();
 
-        const thiefProfile = getUserProfile(interaction.guildId!, interaction.user.id);
-        const victimProfile = getUserProfile(interaction.guildId!, targetUser.id);
+        const thiefProfile = await getUserProfile(interaction.guildId!, interaction.user.id);
+        const victimProfile = await getUserProfile(interaction.guildId!, targetUser.id);
         const now = Date.now();
 
         // Cooldown Check
@@ -52,7 +52,7 @@ export default {
         // Check for Shield
         if (victimProfile.inventory && victimProfile.inventory['shield'] && victimProfile.inventory['shield'] > 0) {
             victimProfile.inventory['shield']--; // Consume shield
-            updateUserProfile(interaction.guildId!, targetUser.id, {
+            await updateUserProfile(interaction.guildId!, targetUser.id, {
                 inventory: victimProfile.inventory
             });
 
@@ -66,11 +66,11 @@ export default {
         if (success) {
             const stealAmount = Math.floor(Math.random() * (victimProfile.balance * 0.2)) + 1; // max 20%
 
-            updateUserProfile(interaction.guildId!, interaction.user.id, {
+            await updateUserProfile(interaction.guildId!, interaction.user.id, {
                 balance: thiefProfile.balance + stealAmount,
                 lastRob: now
             });
-            updateUserProfile(interaction.guildId!, targetUser.id, {
+            await updateUserProfile(interaction.guildId!, targetUser.id, {
                 balance: victimProfile.balance - stealAmount
             });
 
@@ -90,7 +90,7 @@ export default {
         } else {
             const fine = Math.floor(thiefProfile.balance * FINE_PERCENT);
 
-            updateUserProfile(interaction.guildId!, interaction.user.id, {
+            await updateUserProfile(interaction.guildId!, interaction.user.id, {
                 balance: thiefProfile.balance - fine,
                 lastRob: now
             });

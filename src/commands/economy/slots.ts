@@ -11,14 +11,14 @@ export default {
         .setDescription(`Play slots for ${COST} coins!`),
     category: 'economy',
     async execute(interaction: ChatInputCommandInteraction) {
-        const profile = getUserProfile(interaction.guildId!, interaction.user.id);
+        const profile = await getUserProfile(interaction.guildId!, interaction.user.id);
 
         if (profile.balance < COST) {
             return interaction.reply({ content: `🚫 **Insufficient Funds.**\nYou need **${COST} coins** to play slots.`, ephemeral: true });
         }
 
         const costDeductedBalance = profile.balance - COST;
-        updateUserProfile(interaction.guildId!, interaction.user.id, { balance: costDeductedBalance });
+        await updateUserProfile(interaction.guildId!, interaction.user.id, { balance: costDeductedBalance });
 
         // Spin
         const s1 = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
@@ -46,7 +46,7 @@ export default {
         }
 
         if (winnings > 0) {
-            updateUserProfile(interaction.guildId!, interaction.user.id, { balance: costDeductedBalance + winnings });
+            await updateUserProfile(interaction.guildId!, interaction.user.id, { balance: costDeductedBalance + winnings });
         }
 
         const embed = new EmbedBuilder()

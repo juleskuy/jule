@@ -20,7 +20,7 @@ export default {
         const guildId = interaction.guildId!;
 
         // Add Warning
-        addWarning({
+        await addWarning({
             id: `${Date.now()}-${user.id}`,
             userId: user.id,
             guildId,
@@ -30,8 +30,8 @@ export default {
         });
 
         // Add Case
-        const caseId = getNextCaseId(guildId);
-        addCase({
+        const caseId = await getNextCaseId(guildId);
+        await addCase({
             caseId,
             guildId,
             userId: user.id,
@@ -51,7 +51,7 @@ export default {
         await user.send({ embeds: [dmEmbed] }).catch(() => { });
 
         // Get total warnings for display
-        const warnings = getUserWarnings(guildId, user.id);
+        const warnings = await getUserWarnings(guildId, user.id);
 
         const embed = new EmbedBuilder()
             .setColor(0xf39c12)

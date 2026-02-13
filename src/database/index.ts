@@ -1,127 +1,197 @@
-import { JsonDatabase } from '../utils/jsonDb';
-import { Database, GuildConfig, UserProfile, Warning, ModerationCase, TempMute } from '../types/database';
+import prisma from './client';
+import { GuildConfig, UserProfile, Warning, ModerationCase, TempMute } from '../types/database';
 
-const defaultData: Database = {
-    guilds: {},
-    users: {},
-    warnings: [],
-    cases: {},
-    tempMutes: []
-};
+export async function getGuildConfig(guildId: string): Promise<GuildConfig> {
+    const config = await prisma.guildConfig.findUnique({
+        where: { guildId }
+    });
 
-export const db = new JsonDatabase<Database>('main.json', defaultData);
-
-export function getGuildConfig(guildId: string): GuildConfig {
-    const data = db.get();
-    if (!data.guilds[guildId]) {
-        data.guilds[guildId] = {
-            guildId,
-            levelingEnabled: false
-        };
-        db.set(data);
+    if (!config) {
+        return await prisma.guildConfig.create({
+            data: {
+                guildId,
+                levelingEnabled: false
+            }
+        });
     }
-    return data.guilds[guildId];
+
+    return config as GuildConfig;
 }
 
-export function updateGuildConfig(guildId: string, update: Partial<GuildConfig>): void {
-    db.update(data => {
-        if (!data.guilds[guildId]) {
-            data.guilds[guildId] = { guildId, levelingEnabled: false };
+export async function updateGuildConfig(guildId: string, update: Partial<GuildConfig>): Promise<void> {
+    await prisma.guildConfig.upsert({
+        where: { guildId },
+        update: update,
+        create: {
+            guildId,
+            levelingEnabled: update.levelingEnabled ?? false,
+            ...update
         }
-        data.guilds[guildId] = { ...data.guilds[guildId], ...update };
-        return data;
     });
 }
 
-export function getUserProfile(guildId: string, userId: string): UserProfile {
-    const key = `${guildId}-${userId}`;
-    const data = db.get();
+export async function getUserProfile(guildId: string, userId: string): Promise<UserProfile> {
+    const profile = await prisma.userProfile.findUnique({
+        where: {
+            userId_guildId: { userId, guildId }
+        }
+    });
 
-    if (!data.users[key]) {
-        data.users[key] = {
+    if (!profile) {
+        const newProfile = await prisma.userProfile.create({
+            data: {
+                userId,
+                guildId,
+                level: 0,
+                xp: 0,
+                balance: 0
+            }
+        });
+        return mapUserProfile(newProfile);
+    }
+
+    return mapUserProfile(profile);
+}
+
+export async function updateUserProfile(guildId: string, userId: string, update: Partial<UserProfile>): Promise<void> {
+    const data: any = { ...update };
+
+    // Map number timestamps to BigInt for Prisma if they exist
+    if (update.lastDaily) data.lastDaily = BigInt(update.lastDaily);
+    if (update.lastWork) data.lastWork = BigInt(update.lastWork);
+    if (update.lastRob) data.lastRob = BigInt(update.lastRob);
+    if (update.inventory) data.inventory = update.inventory;
+
+    await prisma.userProfile.upsert({
+        where: {
+            userId_guildId: { userId, guildId }
+        },
+        update: data,
+        create: {
             userId,
             guildId,
-            level: 0,
-            xp: 0,
-            balance: 0
-        };
-        db.set(data);
-    }
-
-    return data.users[key];
-}
-
-export function updateUserProfile(guildId: string, userId: string, update: Partial<UserProfile>): void {
-    const key = `${guildId}-${userId}`;
-    db.update(data => {
-        if (!data.users[key]) {
-            data.users[key] = { userId, guildId, level: 0, xp: 0, balance: 0 };
+            level: update.level ?? 0,
+            xp: update.xp ?? 0,
+            balance: update.balance ?? 0,
+            ...data
         }
-        data.users[key] = { ...data.users[key], ...update };
-        return data;
     });
 }
 
-export function addWarning(warning: Warning): void {
-    db.update(data => {
-        data.warnings.push(warning);
-        return data;
-    });
-}
-
-export function getUserWarnings(guildId: string, userId: string): Warning[] {
-    const data = db.get();
-    return data.warnings.filter(w => w.guildId === guildId && w.userId === userId);
-}
-
-export function addCase(modCase: ModerationCase): void {
-    db.update(data => {
-        if (!data.cases[modCase.guildId]) {
-            data.cases[modCase.guildId] = [];
+export async function addWarning(warning: Warning): Promise<void> {
+    await prisma.warning.create({
+        data: {
+            id: warning.id,
+            userId: warning.userId,
+            guildId: warning.guildId,
+            moderatorId: warning.moderatorId,
+            reason: warning.reason,
+            timestamp: BigInt(warning.timestamp)
         }
-        data.cases[modCase.guildId].push(modCase);
-        return data;
     });
 }
 
-export function getNextCaseId(guildId: string): number {
-    const data = db.get();
-    const cases = data.cases[guildId] || [];
-    return cases.length > 0 ? Math.max(...cases.map(c => c.caseId)) + 1 : 1;
+export async function getUserWarnings(guildId: string, userId: string): Promise<Warning[]> {
+    const warnings = await prisma.warning.findMany({
+        where: { guildId, userId }
+    });
+    return warnings.map(w => ({
+        ...w,
+        timestamp: Number(w.timestamp)
+    }));
 }
 
-export function addTempMute(mute: TempMute): void {
-    db.update(data => {
-        data.tempMutes.push(mute);
-        return data;
+export async function addCase(modCase: ModerationCase): Promise<void> {
+    await prisma.moderationCase.create({
+        data: {
+            caseId: modCase.caseId,
+            guildId: modCase.guildId,
+            userId: modCase.userId,
+            moderatorId: modCase.moderatorId,
+            action: modCase.action,
+            reason: modCase.reason,
+            timestamp: BigInt(modCase.timestamp),
+            duration: modCase.duration
+        }
     });
 }
 
-export function removeTempMute(guildId: string, userId: string): void {
-    db.update(data => {
-        data.tempMutes = data.tempMutes.filter(m => !(m.guildId === guildId && m.userId === userId));
-        return data;
+export async function getNextCaseId(guildId: string): Promise<number> {
+    const lastCase = await prisma.moderationCase.findFirst({
+        where: { guildId },
+        orderBy: { caseId: 'desc' }
+    });
+    return lastCase ? lastCase.caseId + 1 : 1;
+}
+
+export async function addTempMute(mute: TempMute): Promise<void> {
+    await prisma.tempMute.upsert({
+        where: {
+            userId_guildId: { userId: mute.userId, guildId: mute.guildId }
+        },
+        update: {
+            endTime: BigInt(mute.endTime),
+            roleId: mute.roleId
+        },
+        create: {
+            userId: mute.userId,
+            guildId: mute.guildId,
+            endTime: BigInt(mute.endTime),
+            roleId: mute.roleId
+        }
     });
 }
 
-export function getExpiredMutes(): TempMute[] {
-    const data = db.get();
-    const now = Date.now();
-    return data.tempMutes.filter(m => m.endTime <= now);
+export async function removeTempMute(guildId: string, userId: string): Promise<void> {
+    await prisma.tempMute.deleteMany({
+        where: { guildId, userId }
+    });
 }
 
-export function getLeaderboard(guildId: string, limit: number = 10): UserProfile[] {
-    const data = db.get();
-    return Object.values(data.users)
-        .filter(u => u.guildId === guildId)
-        .sort((a, b) => b.level - a.level || b.xp - a.xp)
-        .slice(0, limit);
+export async function getExpiredMutes(): Promise<TempMute[]> {
+    const now = BigInt(Date.now());
+    const mutes = await prisma.tempMute.findMany({
+        where: {
+            endTime: { lte: now }
+        }
+    });
+    return mutes.map(m => ({
+        ...m,
+        endTime: Number(m.endTime)
+    }));
 }
 
-export function getRichList(guildId: string, limit: number = 10): UserProfile[] {
-    const data = db.get();
-    return Object.values(data.users)
-        .filter(u => u.guildId === guildId)
-        .sort((a, b) => b.balance - a.balance)
-        .slice(0, limit);
+export async function getLeaderboard(guildId: string, limit: number = 10): Promise<UserProfile[]> {
+    const profiles = await prisma.userProfile.findMany({
+        where: { guildId },
+        orderBy: [
+            { level: 'desc' },
+            { xp: 'desc' }
+        ],
+        take: limit
+    });
+    return profiles.map(mapUserProfile);
+}
+
+export async function getRichList(guildId: string, limit: number = 10): Promise<UserProfile[]> {
+    const profiles = await prisma.userProfile.findMany({
+        where: { guildId },
+        orderBy: { balance: 'desc' },
+        take: limit
+    });
+    return profiles.map(mapUserProfile);
+}
+
+function mapUserProfile(p: any): UserProfile {
+    return {
+        userId: p.userId,
+        guildId: p.guildId,
+        level: p.level,
+        xp: p.xp,
+        balance: p.balance,
+        lastDaily: p.lastDaily ? Number(p.lastDaily) : undefined,
+        lastWork: p.lastWork ? Number(p.lastWork) : undefined,
+        lastRob: p.lastRob ? Number(p.lastRob) : undefined,
+        inventory: p.inventory as { [itemId: string]: number } | undefined
+    };
 }

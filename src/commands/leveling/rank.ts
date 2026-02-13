@@ -16,14 +16,14 @@ export default {
         ),
     category: 'leveling',
     async execute(interaction: ChatInputCommandInteraction) {
-        const config = getGuildConfig(interaction.guildId!);
+        const config = await getGuildConfig(interaction.guildId!);
         if (!config.levelingEnabled) {
             return interaction.reply({ content: '🚫 **Leveling is disabled.**', ephemeral: true });
         }
 
         const user = interaction.options.getUser('user') || interaction.user;
-        const profile = getUserProfile(interaction.guildId!, user.id);
-        const leaderboard = getLeaderboard(interaction.guildId!, 100);
+        const profile = await getUserProfile(interaction.guildId!, user.id);
+        const leaderboard = await getLeaderboard(interaction.guildId!, 100);
         const rank = leaderboard.findIndex(p => p.userId === user.id) + 1;
 
         const currentLevelXp = profile.level * XP_PER_LEVEL;

@@ -11,7 +11,7 @@ export default {
         .setDescription('Claim your daily reward'),
     category: 'economy',
     async execute(interaction: ChatInputCommandInteraction) {
-        const profile = getUserProfile(interaction.guildId!, interaction.user.id);
+        const profile = await getUserProfile(interaction.guildId!, interaction.user.id);
         const now = Date.now();
 
         if (profile.lastDaily && now - profile.lastDaily < DAILY_COOLDOWN) {
@@ -47,7 +47,7 @@ export default {
             }
         }
 
-        updateUserProfile(interaction.guildId!, interaction.user.id, {
+        await updateUserProfile(interaction.guildId!, interaction.user.id, {
             balance: newBalance,
             lastDaily: now,
             inventory: profile.inventory

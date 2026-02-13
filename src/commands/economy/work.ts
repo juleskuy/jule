@@ -21,7 +21,7 @@ export default {
         .setDescription('Work to earn coins'),
     category: 'economy',
     async execute(interaction: ChatInputCommandInteraction) {
-        const profile = getUserProfile(interaction.guildId!, interaction.user.id);
+        const profile = await getUserProfile(interaction.guildId!, interaction.user.id);
         const now = Date.now();
 
         if (profile.lastWork && now - profile.lastWork < WORK_COOLDOWN) {
@@ -46,7 +46,7 @@ export default {
 
         const newBalance = profile.balance + earned;
 
-        updateUserProfile(interaction.guildId!, interaction.user.id, {
+        await updateUserProfile(interaction.guildId!, interaction.user.id, {
             balance: newBalance,
             lastWork: now,
             inventory: profile.inventory // Save inventory change if any

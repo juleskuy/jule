@@ -8,7 +8,7 @@ export default {
         .setDescription('View the wealthiest users'),
     category: 'economy',
     async execute(interaction: ChatInputCommandInteraction) {
-        const topUsers = getRichList(interaction.guildId!, 10);
+        const topUsers = await getRichList(interaction.guildId!, 10);
 
         if (topUsers.length === 0) {
             return interaction.reply({ content: '🚫 **No data available yet!** Start earning coins with `/daily` and `/work`.', ephemeral: true });

@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model GuildConfig {
+  guildId                   String   @id
+  modLogChannel             String?
+  welcomeChannel            String?
+  goodbyeChannel            String?
+  autoRole                  String?
+  mutedRole                 String?
+  levelingEnabled           Boolean  @default(false)
+  joinToCreateChannelId     String?
+  ticketCategoryId          String?
+  ticketTranscriptChannelId String?
+}
+
+model UserProfile {
+  id        Int    @id @default(autoincrement())
+  userId    String
+  guildId   String
+  level     Int    @default(0)
+  xp        Int    @default(0)
+  balance   Int    @default(0)
+  lastDaily BigInt?
+  lastWork  BigInt?
+  lastRob   BigInt?
+  inventory Json?
+
+  @@unique([userId, guildId])
+}
+
+model Warning {
+  id          String   @id @default(uuid())
+  userId      String
+  guildId     String
+  moderatorId String
+  reason      String
+  timestamp   BigInt
+}
+
+model ModerationCase {
+  caseId      Int
+  guildId     String
+  userId      String
+  moderatorId String
+  action      String   // Using String instead of enum for simplicity, but we can use enum too
+  reason      String
+  timestamp   BigInt
+  duration    Int?
+
+  @@id([guildId, caseId])
+}
+
+model TempMute {
+  id        Int    @id @default(autoincrement())
+  userId    String
+  guildId   String
+  endTime   BigInt
+  roleId    String
+
+  @@unique([userId, guildId])
+}

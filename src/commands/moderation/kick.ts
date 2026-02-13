@@ -26,7 +26,7 @@ export default {
             return interaction.reply({ content: '🚫 **Permission Error.** I cannot kick this user.', ephemeral: true });
         }
 
-        const caseId = getNextCaseId(interaction.guildId!);
+        const caseId = await getNextCaseId(interaction.guildId!);
 
         try {
             // Notify User
@@ -40,7 +40,7 @@ export default {
 
             await member.kick(reason);
 
-            addCase({
+            await addCase({
                 caseId,
                 guildId: interaction.guildId!,
                 userId: user.id,

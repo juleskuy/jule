@@ -28,7 +28,7 @@ export default {
             return interaction.reply({ content: `❌ **Item not found.** Check \`/shop\` for available items.`, ephemeral: true });
         }
 
-        const profile = getUserProfile(interaction.guildId!, interaction.user.id);
+        const profile = await getUserProfile(interaction.guildId!, interaction.user.id);
 
         if (profile.balance < foundItem.price) {
             return interaction.reply({ content: `❌ **Insufficient funds.** You need 🪙 \`${(foundItem.price - profile.balance).toLocaleString()}\` more.`, ephemeral: true });
@@ -43,7 +43,7 @@ export default {
         profile.inventory[foundItem.id]++;
 
         // Save
-        updateUserProfile(interaction.guildId!, interaction.user.id, {
+        await updateUserProfile(interaction.guildId!, interaction.user.id, {
             balance: profile.balance,
             inventory: profile.inventory
         });

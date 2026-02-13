@@ -105,7 +105,7 @@ export default {
         const subcommand = interaction.options.getSubcommand();
 
         if (subcommand === 'view') {
-            const config = getGuildConfig(interaction.guildId!);
+            const config = await getGuildConfig(interaction.guildId!);
             const guild = interaction.guild;
 
             const embed = new EmbedBuilder()
@@ -162,7 +162,7 @@ export default {
         if (subcommand === 'welcome') {
             const channel = interaction.options.getChannel('channel', true);
             if (channel && channel.type === ChannelType.GuildText) {
-                updateGuildConfig(interaction.guildId!, { welcomeChannel: channel.id });
+                await updateGuildConfig(interaction.guildId!, { welcomeChannel: channel.id });
                 settingName = 'Welcome Channel';
                 settingValue = `${channel}`;
                 message = `Welcome messages will now be sent to ${channel}`;
@@ -170,7 +170,7 @@ export default {
         } else if (subcommand === 'goodbye') {
             const channel = interaction.options.getChannel('channel', true);
             if (channel && channel.type === ChannelType.GuildText) {
-                updateGuildConfig(interaction.guildId!, { goodbyeChannel: channel.id });
+                await updateGuildConfig(interaction.guildId!, { goodbyeChannel: channel.id });
                 settingName = 'Goodbye Channel';
                 settingValue = `${channel}`;
                 message = `Goodbye messages will now be sent to ${channel}`;
@@ -178,27 +178,27 @@ export default {
         } else if (subcommand === 'modlog') {
             const channel = interaction.options.getChannel('channel', true);
             if (channel && channel.type === ChannelType.GuildText) {
-                updateGuildConfig(interaction.guildId!, { modLogChannel: channel.id });
+                await updateGuildConfig(interaction.guildId!, { modLogChannel: channel.id });
                 settingName = 'Mod Log Channel';
                 settingValue = `${channel}`;
                 message = `Moderation logs will be recorded in ${channel}`;
             }
         } else if (subcommand === 'autorole') {
             const role = interaction.options.getRole('role', true);
-            updateGuildConfig(interaction.guildId!, { autoRole: role.id });
+            await updateGuildConfig(interaction.guildId!, { autoRole: role.id });
             settingName = 'Auto Role';
             settingValue = `${role}`;
             message = `New members will automatically receive the **${role.name}** role`;
         } else if (subcommand === 'leveling') {
             const enabled = interaction.options.getBoolean('enabled', true);
-            updateGuildConfig(interaction.guildId!, { levelingEnabled: enabled });
+            await updateGuildConfig(interaction.guildId!, { levelingEnabled: enabled });
             settingName = 'Leveling System';
             settingValue = enabled ? '✅ Enabled' : '❌ Disabled';
             message = `The leveling system has been **${enabled ? 'enabled' : 'disabled'}** for this server`;
         } else if (subcommand === 'ticket-category') {
             const category = interaction.options.getChannel('category', true);
             if (category && category.type === ChannelType.GuildCategory) {
-                updateGuildConfig(interaction.guildId!, { ticketCategoryId: category.id });
+                await updateGuildConfig(interaction.guildId!, { ticketCategoryId: category.id });
                 settingName = 'Ticket Category';
                 settingValue = `${category.name}`;
                 message = `Tickets will be created in **${category.name}**`;
@@ -206,7 +206,7 @@ export default {
         } else if (subcommand === 'ticket-logs') {
             const channel = interaction.options.getChannel('channel', true);
             if (channel && channel.type === ChannelType.GuildText) {
-                updateGuildConfig(interaction.guildId!, { ticketTranscriptChannelId: channel.id });
+                await updateGuildConfig(interaction.guildId!, { ticketTranscriptChannelId: channel.id });
                 settingName = 'Ticket Logs';
                 settingValue = `${channel}`;
                 message = `Transcripts will be sent to ${channel}`;

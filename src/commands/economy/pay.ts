@@ -25,7 +25,7 @@ export default {
             return interaction.reply({ content: '🤖 **Bot error.** Bots cannot hold currency!', ephemeral: true });
         }
 
-        const senderProfile = getUserProfile(interaction.guildId!, interaction.user.id);
+        const senderProfile = await getUserProfile(interaction.guildId!, interaction.user.id);
 
         if (senderProfile.balance < amount) {
             return interaction.reply({
@@ -34,14 +34,14 @@ export default {
             });
         }
 
-        const receiverProfile = getUserProfile(interaction.guildId!, targetUser.id);
+        const receiverProfile = await getUserProfile(interaction.guildId!, targetUser.id);
 
         // Transaction Execution
         const senderNewBal = senderProfile.balance - amount;
         const receiverNewBal = receiverProfile.balance + amount;
 
-        updateUserProfile(interaction.guildId!, interaction.user.id, { balance: senderNewBal });
-        updateUserProfile(interaction.guildId!, targetUser.id, { balance: receiverNewBal });
+        await updateUserProfile(interaction.guildId!, interaction.user.id, { balance: senderNewBal });
+        await updateUserProfile(interaction.guildId!, targetUser.id, { balance: receiverNewBal });
 
         // Receipt Embed
         const embed = new EmbedBuilder()

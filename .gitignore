@@ -5,3 +5,5 @@ database/*.json
 !database/.gitkeep
 *.log
 .DS_Store
+
+/src/generated/prisma
