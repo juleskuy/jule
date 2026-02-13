@@ -25,15 +25,16 @@ export default {
 
                 const embed = new EmbedBuilder()
                     .setColor(0x2ecc71)
-                    .setAuthor({ name: `Welcome to ${member.guild.name}!`, iconURL: member.guild.iconURL() || undefined })
-                    .setDescription(`👋 Hey ${member}, welcome to the server!\n\nWe're glad to have you here! Make sure to read the rules and have fun!`)
+                    .setTitle(`👋 Welcome to ${member.guild.name}!`)
+                    .setDescription(`Hello ${member}, we're thrilled to have you here!\n\nPlease check out the rules and verify yourself to gain access to the rest of the server.`)
                     .setThumbnail(member.user.displayAvatarURL({ size: 256 }))
                     .addFields(
-                        { name: '👤 Member', value: `${member.user.tag}`, inline: true },
-                        { name: '📅 Account Created', value: `<t:${createdAt}:R>`, inline: true },
-                        { name: '👥 Member Count', value: `${memberCount.toLocaleString()}`, inline: true }
+                        { name: '👤 Member Info', value: `> **Tag:** ${member.user.tag}\n> **ID:** ${member.user.id}`, inline: true },
+                        { name: '📅 Account Age', value: `> Created <t:${createdAt}:R>`, inline: true },
+                        { name: '📊 Server Stats', value: `> You are member #${memberCount}`, inline: false }
                     )
-                    .setFooter({ text: `Member #${memberCount} • Enjoy your stay!` })
+                    .setImage('https://media.discordapp.net/attachments/1206634502837305384/1206634685327278140/rainbow_line.gif?ex=65dcc0b3&is=65ca4bb3&hm=2a80603780373434606623635742337728472506307303733075677053530386&')
+                    .setFooter({ text: `Welcome to the community! • Jule Bot`, iconURL: member.client.user?.displayAvatarURL() })
                     .setTimestamp();
 
                 await channel.send({ embeds: [embed] });

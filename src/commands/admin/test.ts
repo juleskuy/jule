@@ -63,7 +63,7 @@ export default {
                 .setTimestamp();
 
             // Send to channel
-            await channel.send({ content: `Welcome ${user}!`, embeds: [welcomeEmbed] });
+            await channel.send({ embeds: [welcomeEmbed] });
 
             // Reply to command
             await interaction.reply({
