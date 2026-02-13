@@ -1,208 +1,198 @@
-import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ComponentType, ColorResolvable, ChatInputCommandInteraction } from 'discord.js';
 import { Command } from '../../types/command';
+
+// Define the category structure for easier management and cleaner code
+const CATEGORIES: Record<string, {
+    label: string,
+    description: string,
+    emoji: string,
+    embedTitle: string,
+    embedDesc: string,
+    commands: { name: string, desc: string }[]
+}> = {
+    moderation: {
+        label: 'Moderation',
+        description: 'Server moderation tools',
+        emoji: '🛡️',
+        embedTitle: '🛡️ Moderation System',
+        embedDesc: 'Powerful tools to keep your server safe, secure, and organized.',
+        commands: [
+            { name: '/warn', desc: 'Warn a user with reason tracking' },
+            { name: '/kick', desc: 'Kick a member from the server' },
+            { name: '/ban', desc: 'Ban a user (with message deletion option)' },
+            { name: '/mute', desc: 'Timeout a user for a specified duration' },
+            { name: '/purge', desc: 'Bulk delete messages (1-100)' }
+        ]
+    },
+    economy: {
+        label: 'Economy',
+        description: 'Global economy system',
+        emoji: '💰',
+        embedTitle: '💰 Global Economy',
+        embedDesc: 'Participate in the cross-server economy. Earn, trade, and compete!',
+        commands: [
+            { name: '/balance', desc: 'Check your current wallet and bank balance' },
+            { name: '/daily', desc: 'Claim your daily reward (24h cooldown)' },
+            { name: '/work', desc: 'Work a shift to earn coins (1h cooldown)' },
+            { name: '/pay', desc: 'Transfer coins to another user securely' },
+            { name: '/slots', desc: 'Test your luck with the slot machine' },
+            { name: '/rob', desc: 'Attempt to rob another user (Risky!)' },
+            { name: '/rich', desc: 'View the global wealth leaderboard' }
+        ]
+    },
+    leveling: {
+        label: 'Leveling',
+        description: 'XP and ranking system',
+        emoji: '📊',
+        embedTitle: '📊 Leveling & Ranks',
+        embedDesc: 'Engage with the community to earn XP and level up.',
+        commands: [
+            { name: '/rank', desc: 'View your current rank card and progress' },
+            { name: '/leaderboard', desc: 'See the most active members in the server' },
+            { name: '✨ Auto XP', desc: 'Earn 15-25 XP per message (1 min cooldown)' }
+        ]
+    },
+    fun: {
+        label: 'Fun',
+        description: 'Games and entertainment',
+        emoji: '🎮',
+        embedTitle: '🎮 Fun & Games',
+        embedDesc: 'Take a break and enjoy some entertainment commands.',
+        commands: [
+            { name: '/8ball', desc: 'Ask the magic 8ball a question' },
+            { name: '/coinflip', desc: 'Flip a coin to settle a debate' }
+        ]
+    },
+    utility: {
+        label: 'Utility',
+        description: 'Helper tools and info',
+        emoji: '🔧',
+        embedTitle: '🔧 Utility Tools',
+        embedDesc: 'Useful commands for server information and bot diagnostics.',
+        commands: [
+            { name: '/ping', desc: 'Check the bot\'s latency and heartbeat' },
+            { name: '/serverinfo', desc: 'Display detailed server information' },
+            { name: '/userinfo', desc: 'Get details about a specific user' },
+            { name: '/help', desc: 'Open this interactive help menu' },
+            { name: '/setup-voice', desc: 'Configure the Join-to-Create voice system' }
+        ]
+    },
+    admin: {
+        label: 'Admin',
+        description: 'Server configuration',
+        emoji: '👑',
+        embedTitle: '👑 Administration',
+        embedDesc: 'Advanced tools for server administrators.',
+        commands: [
+            { name: '/config welcome', desc: 'Set the welcome messages channel' },
+            { name: '/config goodbye', desc: 'Set the goodbye messages channel' },
+            { name: '/config modlog', desc: 'Set the moderation logs channel' },
+            { name: '/config autorole', desc: 'Set the role given to new members' },
+            { name: '/config leveling', desc: 'Toggle the leveling system on/off' },
+            { name: '/config view', desc: 'View current server configuration' },
+            { name: '/test welcome', desc: 'Simulate a welcome message event' },
+            { name: '/test goodbye', desc: 'Simulate a goodbye message event' }
+        ]
+    },
+    features: {
+        label: 'Features',
+        description: 'Auto-running systems',
+        emoji: '⚡',
+        embedTitle: '⚡ Automated Features',
+        embedDesc: 'Passive systems that enhance your server experience.',
+        commands: [
+            { name: '👋 Welcome Messages', desc: 'Customizable welcome greetings' },
+            { name: '👋 Goodbye Messages', desc: 'Customizable leave notifications' },
+            { name: '🎭 Auto Role', desc: 'Instant role assignment on join' },
+            { name: '📊 XP System', desc: 'Activity tracking and leveling' },
+            { name: '🎉 Rank Up', desc: 'Notifications when members level up' },
+            { name: '📝 Mod Logging', desc: 'Audit logs for moderation actions' }
+        ]
+    }
+};
+
+const MAIN_COLOR: ColorResolvable = 0x2b2d31;
 
 export default {
     data: new SlashCommandBuilder()
         .setName('help')
         .setDescription('View all available commands and features'),
     category: 'utility',
-    async execute(interaction) {
-        const embed = new EmbedBuilder()
-            .setColor(0x2b2d31)
-            .setTitle('📚 jule - Command List')
-            .setDescription('Select a category below to view commands!')
-            .addFields(
-                { name: '🛡️ Moderation', value: 'Server moderation tools', inline: true },
-                { name: '💰 Economy', value: 'Earn and manage coins', inline: true },
-                { name: '📊 Leveling', value: 'XP and ranking system', inline: true },
-                { name: '🎮 Fun', value: 'Entertainment commands', inline: true },
-                { name: '🔧 Utility', value: 'Useful tools', inline: true },
-                { name: '👑 Admin', value: 'Server configuration', inline: true }
-            )
-            .setFooter({ text: 'Use the dropdown menu to view commands in each category' })
-            .setTimestamp();
+    async execute(interaction: ChatInputCommandInteraction) {
+        // Defer if necessary, but help is usually fast. We'll standard reply.
 
+        const botAvatar = interaction.client.user?.displayAvatarURL();
+        const userAvatar = interaction.user.displayAvatarURL();
+
+        // 1. Build the Main Overview Embed
+        const mainEmbed = new EmbedBuilder()
+            .setColor(MAIN_COLOR)
+            .setTitle(`📚 ${interaction.client.user?.username || 'Jule'} Help Center`)
+            .setDescription('**Welcome!**\nUse the dropdown menu below to explore the available commands and features.\n\nRequired permissions and cooldowns apply to certain commands.')
+            .setThumbnail(botAvatar || null)
+            .addFields(
+                Object.entries(CATEGORIES).map(([_, cat]) => ({
+                    name: `${cat.emoji}  ${cat.label}`,
+                    value: `\`${cat.description}\``, // Code block for cleaner look
+                    inline: true
+                }))
+            )
+            .setTimestamp()
+            .setFooter({ text: 'Use the menu below to navigate', iconURL: botAvatar || undefined });
+
+        // 2. Build the Select Menu
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId('help-category')
-            .setPlaceholder('Select a category')
-            .addOptions([
-                {
-                    label: 'Moderation',
-                    description: 'Server moderation commands',
-                    value: 'moderation',
-                    emoji: '🛡️',
-                },
-                {
-                    label: 'Economy',
-                    description: 'Economy and currency commands',
-                    value: 'economy',
-                    emoji: '💰',
-                },
-                {
-                    label: 'Leveling',
-                    description: 'Level and rank commands',
-                    value: 'leveling',
-                    emoji: '📊',
-                },
-                {
-                    label: 'Fun',
-                    description: 'Fun and entertainment commands',
-                    value: 'fun',
-                    emoji: '🎮',
-                },
-                {
-                    label: 'Utility',
-                    description: 'Utility commands',
-                    value: 'utility',
-                    emoji: '🔧',
-                },
-                {
-                    label: 'Admin',
-                    description: 'Server administration commands',
-                    value: 'admin',
-                    emoji: '👑',
-                },
-                {
-                    label: 'Features',
-                    description: 'Automatic features',
-                    value: 'features',
-                    emoji: '⚡',
-                },
-            ]);
+            .setPlaceholder('Select a category...')
+            .addOptions(
+                Object.entries(CATEGORIES).map(([key, cat]) => ({
+                    label: cat.label,
+                    description: cat.description,
+                    value: key,
+                    emoji: cat.emoji,
+                }))
+            );
 
         const row = new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(selectMenu);
 
+        // 3. Send the Initial Reply
         const response = await interaction.reply({
-            embeds: [embed],
+            embeds: [mainEmbed],
             components: [row],
+            fetchReply: true
         });
 
+        // 4. Create a Collector
         const collector = response.createMessageComponentCollector({
             componentType: ComponentType.StringSelect,
-            time: 300000, // 5 minutes
+            time: 300_000, // 5 minutes
         });
 
         collector.on('collect', async (i) => {
             if (i.user.id !== interaction.user.id) {
-                return i.reply({ content: 'This menu is not for you!', ephemeral: true });
+                return i.reply({ content: '🚫 This menu is controlled by the command sender.', ephemeral: true });
             }
 
-            const category = i.values[0];
-            let categoryEmbed: EmbedBuilder;
+            const selection = i.values[0];
+            const category = CATEGORIES[selection];
 
-            switch (category) {
-                case 'moderation':
-                    categoryEmbed = new EmbedBuilder()
-                        .setColor(0x2b2d31)
-                        .setTitle('🛡️ Moderation Commands')
-                        .setDescription('Manage your server effectively')
-                        .addFields(
-                            { name: '`/warn`', value: 'Warn a user with reason tracking', inline: false },
-                            { name: '`/kick`', value: 'Kick a member from the server', inline: false },
-                            { name: '`/ban`', value: 'Ban a user (with message deletion option)', inline: false },
-                            { name: '`/mute`', value: 'Timeout a user for specified duration', inline: false },
-                            { name: '`/purge`', value: 'Bulk delete messages (1-100)', inline: false }
-                        )
-                        .setFooter({ text: 'All moderation commands are logged and tracked' });
-                    break;
+            if (category) {
+                const categoryEmbed = new EmbedBuilder()
+                    .setColor(MAIN_COLOR)
+                    .setTitle(`${category.embedTitle}`)
+                    .setDescription(`### ${category.embedDesc}\n\n${category.commands.map(cmd => `> **\`${cmd.name}\`**\n> ${cmd.desc}`).join('\n\n')}`)
+                    .setThumbnail(botAvatar || null)
+                    .setFooter({ text: `Requested by ${interaction.user.displayName}`, iconURL: userAvatar })
+                    .setTimestamp();
 
-                case 'economy':
-                    categoryEmbed = new EmbedBuilder()
-                        .setColor(0x2b2d31)
-                        .setTitle('💰 Economy Commands')
-                        .setDescription('Earn and manage virtual currency')
-                        .addFields(
-                            { name: '`/balance`', value: 'Check your or another user\'s balance', inline: false },
-                            { name: '`/daily`', value: 'Claim 100 coins daily (24h cooldown)', inline: false },
-                            { name: '`/work`', value: 'Work to earn 50-150 coins (1h cooldown)', inline: false }
-                        )
-                        .setFooter({ text: 'More economy features coming soon!' });
-                    break;
-
-                case 'leveling':
-                    categoryEmbed = new EmbedBuilder()
-                        .setColor(0x2b2d31)
-                        .setTitle('📊 Leveling Commands')
-                        .setDescription('Track your server activity and progress')
-                        .addFields(
-                            { name: '`/rank`', value: 'View your or another user\'s rank, level, and XP', inline: false },
-                            { name: '`/leaderboard`', value: 'View top 10 most active members', inline: false },
-                            { name: '📝 Auto XP', value: 'Earn 15-25 XP per message (1 min cooldown)', inline: false }
-                        )
-                        .setFooter({ text: '100 XP required per level' });
-                    break;
-
-                case 'fun':
-                    categoryEmbed = new EmbedBuilder()
-                        .setColor(0x2b2d31)
-                        .setTitle('🎮 Fun Commands')
-                        .setDescription('Entertainment and games')
-                        .addFields(
-                            { name: '`/8ball`', value: 'Ask the magic 8ball a question', inline: false },
-                            { name: '`/coinflip`', value: 'Flip a coin (heads or tails)', inline: false }
-                        )
-                        .setFooter({ text: 'More fun commands coming soon!' });
-                    break;
-
-                case 'utility':
-                    categoryEmbed = new EmbedBuilder()
-                        .setColor(0x2b2d31)
-                        .setTitle('🔧 Utility Commands')
-                        .setDescription('Useful information and tools')
-                        .addFields(
-                            { name: '`/ping`', value: 'Check bot latency and API response time', inline: false },
-                            { name: '`/serverinfo`', value: 'View detailed server information', inline: false },
-                            { name: '`/userinfo`', value: 'View detailed user information', inline: false },
-                            { name: '`/help`', value: 'View this help menu', inline: false },
-                            { name: '`/setup-voice`', value: 'Setup Join to Create voice channel', inline: false },
-                        );
-                    break;
-
-                case 'admin':
-                    categoryEmbed = new EmbedBuilder()
-                        .setColor(0x2b2d31)
-                        .setTitle('👑 Admin Commands')
-                        .setDescription('Server configuration (Administrator only)')
-                        .addFields(
-                            { name: '`/config welcome`', value: 'Set welcome message channel', inline: false },
-                            { name: '`/config goodbye`', value: 'Set goodbye message channel', inline: false },
-                            { name: '`/config modlog`', value: 'Set moderation log channel', inline: false },
-                            { name: '`/config autorole`', value: 'Set auto-role for new members', inline: false },
-                            { name: '`/config leveling`', value: 'Enable/disable leveling system', inline: false },
-                            { name: '`/config view`', value: 'View current server configuration', inline: false },
-                            { name: '`/test welcome`', value: 'Test welcome message', inline: false },
-                            { name: '`/test goodbye`', value: 'Test goodbye message', inline: false }
-                        )
-                        .setFooter({ text: '⚠️ Administrator permission required' });
-                    break;
-
-                case 'features':
-                    categoryEmbed = new EmbedBuilder()
-                        .setColor(0x2b2d31)
-                        .setTitle('⚡ Automatic Features')
-                        .setDescription('Features that work automatically')
-                        .addFields(
-                            { name: '👋 Welcome Messages', value: 'Greet new members when they join (configurable)', inline: false },
-                            { name: '👋 Goodbye Messages', value: 'Say goodbye when members leave (configurable)', inline: false },
-                            { name: '🎭 Auto Role', value: 'Automatically assign roles to new members', inline: false },
-                            { name: '📊 XP System', value: 'Earn XP from chatting (15-25 XP/msg, 1min cooldown)', inline: false },
-                            { name: '🎉 Level Up Notifications', value: 'Get notified when you level up', inline: false },
-                            { name: '📝 Moderation Logging', value: 'Track all moderation actions with case numbers', inline: false }
-                        )
-                        .setFooter({ text: 'Configure these features using /config commands' });
-                    break;
-
-                default:
-                    categoryEmbed = embed;
+                await i.update({ embeds: [categoryEmbed], components: [row] });
             }
-
-            await i.update({ embeds: [categoryEmbed], components: [row] });
         });
 
         collector.on('end', () => {
             const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>()
-                .addComponents(selectMenu.setDisabled(true));
+                .addComponents(selectMenu.setDisabled(true).setPlaceholder('Menu Expired'));
 
             interaction.editReply({ components: [disabledRow] }).catch(() => { });
         });
