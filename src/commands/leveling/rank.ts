@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Command } from '../../types/command';
-import { getUserProfile, getLeaderboard } from '../../database';
+import { getUserProfile, getLeaderboard, getGuildConfig } from '../../database';
 
 const XP_PER_LEVEL = 100;
 
@@ -16,6 +16,11 @@ export default {
         ),
     category: 'leveling',
     async execute(interaction: ChatInputCommandInteraction) {
+        const config = getGuildConfig(interaction.guildId!);
+        if (!config.levelingEnabled) {
+            return interaction.reply({ content: '🚫 Leveling system is currently disabled for this server.', ephemeral: true });
+        }
+
         const user = interaction.options.getUser('user') || interaction.user;
         const profile = getUserProfile(interaction.guildId!, user.id);
         const leaderboard = getLeaderboard(interaction.guildId!, 100);

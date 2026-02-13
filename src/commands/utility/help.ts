@@ -168,6 +168,7 @@ export default {
                             { name: '/config goodbye', value: 'Set goodbye message channel', inline: false },
                             { name: '/config modlog', value: 'Set moderation log channel', inline: false },
                             { name: '/config autorole', value: 'Set auto-role for new members', inline: false },
+                            { name: '/config leveling', value: 'Enable/disable leveling system', inline: false },
                             { name: '/config view', value: 'View current server configuration', inline: false },
                             { name: '/test welcome', value: 'Test welcome message', inline: false },
                             { name: '/test goodbye', value: 'Test goodbye message', inline: false }

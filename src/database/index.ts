@@ -16,7 +16,8 @@ export function getGuildConfig(guildId: string): GuildConfig {
     if (!data.guilds[guildId]) {
         data.guilds[guildId] = {
             guildId,
-            prefix: '!'
+            prefix: '!',
+            levelingEnabled: false
         };
         db.set(data);
     }
@@ -26,7 +27,7 @@ export function getGuildConfig(guildId: string): GuildConfig {
 export function updateGuildConfig(guildId: string, update: Partial<GuildConfig>): void {
     db.update(data => {
         if (!data.guilds[guildId]) {
-            data.guilds[guildId] = { guildId, prefix: '!' };
+            data.guilds[guildId] = { guildId, prefix: '!', levelingEnabled: false };
         }
         data.guilds[guildId] = { ...data.guilds[guildId], ...update };
         return data;

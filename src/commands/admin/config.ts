@@ -55,6 +55,17 @@ export default {
         )
         .addSubcommand(subcommand =>
             subcommand
+                .setName('leveling')
+                .setDescription('Enable or disable leveling system')
+                .addBooleanOption(option =>
+                    option
+                        .setName('enabled')
+                        .setDescription('Whether to enable leveling')
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
                 .setName('view')
                 .setDescription('View current server configuration')
         ),
@@ -73,7 +84,8 @@ export default {
                     { name: 'Welcome Channel', value: config.welcomeChannel ? `<#${config.welcomeChannel}>` : 'Not set', inline: true },
                     { name: 'Goodbye Channel', value: config.goodbyeChannel ? `<#${config.goodbyeChannel}>` : 'Not set', inline: true },
                     { name: 'Mod Log Channel', value: config.modLogChannel ? `<#${config.modLogChannel}>` : 'Not set', inline: true },
-                    { name: 'Auto Role', value: config.autoRole ? `<@&${config.autoRole}>` : 'Not set', inline: true }
+                    { name: 'Auto Role', value: config.autoRole ? `<@&${config.autoRole}>` : 'Not set', inline: true },
+                    { name: 'Leveling System', value: config.levelingEnabled ? 'Enabled' : 'Disabled', inline: true }
                 )
                 .setTimestamp();
 
@@ -98,6 +110,10 @@ export default {
             const role = interaction.options.getRole('role', true);
             updateGuildConfig(interaction.guildId!, { autoRole: role.id });
             message = `Auto role set to ${role}`;
+        } else if (subcommand === 'leveling') {
+            const enabled = interaction.options.getBoolean('enabled', true);
+            updateGuildConfig(interaction.guildId!, { levelingEnabled: enabled });
+            message = `Leveling system has been ${enabled ? 'enabled' : 'disabled'}`;
         }
 
         const embed = new EmbedBuilder()

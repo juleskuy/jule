@@ -1,5 +1,5 @@
 import { Events, Message, EmbedBuilder } from 'discord.js';
-import { getUserProfile, updateUserProfile } from '../database';
+import { getUserProfile, updateUserProfile, getGuildConfig } from '../database';
 
 const cooldowns = new Map<string, number>();
 const XP_COOLDOWN = 60000; // 1 minute
@@ -11,6 +11,9 @@ export default {
     name: Events.MessageCreate,
     async execute(message: Message) {
         if (message.author.bot || !message.guild) return;
+
+        const config = getGuildConfig(message.guild.id);
+        if (!config.levelingEnabled) return;
 
         const key = `${message.guild.id}-${message.author.id}`;
         const now = Date.now();

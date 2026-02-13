@@ -6,6 +6,7 @@ export interface GuildConfig {
     goodbyeChannel?: string;
     autoRole?: string;
     mutedRole?: string;
+    levelingEnabled?: boolean;
 }
 
 export interface UserProfile {

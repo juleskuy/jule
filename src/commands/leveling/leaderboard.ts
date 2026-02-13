@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { Command } from '../../types/command';
-import { getLeaderboard } from '../../database';
+import { getLeaderboard, getGuildConfig } from '../../database';
 
 export default {
     data: new SlashCommandBuilder()
@@ -8,6 +8,11 @@ export default {
         .setDescription('View the server leaderboard'),
     category: 'leveling',
     async execute(interaction: ChatInputCommandInteraction) {
+        const config = getGuildConfig(interaction.guildId!);
+        if (!config.levelingEnabled) {
+            return interaction.reply({ content: '🚫 Leveling system is currently disabled for this server.', ephemeral: true });
+        }
+
         const leaderboard = getLeaderboard(interaction.guildId!, 10);
 
         if (leaderboard.length === 0) {
