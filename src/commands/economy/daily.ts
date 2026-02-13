@@ -21,7 +21,7 @@ export default {
             const seconds = Math.floor((timeLeft % 60000) / 1000);
 
             const embed = new EmbedBuilder()
-                .setColor(0xe74c3c)
+                .setColor(0x2b2d31)
                 .setTitle('⏰ Daily Reward Cooldown')
                 .setDescription(`You've already claimed your daily reward!\n\n⏳ **Come back in:**\n\`\`\`${hours}h ${minutes}m ${seconds}s\`\`\``)
                 .setFooter({ text: 'Daily rewards reset every 24 hours' })
@@ -37,7 +37,7 @@ export default {
         });
 
         const embed = new EmbedBuilder()
-            .setColor(0x2ecc71)
+            .setColor(0x2b2d31)
             .setTitle('🎁 Daily Reward Claimed!')
             .setDescription(`Congratulations! You've received your daily bonus!\n\n💰 **Earned:** \`${DAILY_AMOUNT} coins\`\n💵 **New Balance:** \`${newBalance.toLocaleString()} coins\``)
             .setThumbnail(interaction.user.displayAvatarURL({ size: 128 }))

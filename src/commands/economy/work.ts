@@ -32,7 +32,7 @@ export default {
             const seconds = Math.floor((timeLeft % 60000) / 1000);
 
             const embed = new EmbedBuilder()
-                .setColor(0xe67e22)
+                .setColor(0x2b2d31)
                 .setTitle('😴 You\'re Tired!')
                 .setDescription(`You need to rest before working again!\n\n⏳ **Rest time remaining:**\n\`\`\`${minutes}m ${seconds}s\`\`\``)
                 .setFooter({ text: 'Work cooldown resets every hour' })
@@ -51,7 +51,7 @@ export default {
         });
 
         const embed = new EmbedBuilder()
-            .setColor(0x3498db)
+            .setColor(0x2b2d31)
             .setTitle('💼 Work Complete!')
             .setDescription(`${job.emoji} You worked as a **${job.title}**!\n\n💰 **Earned:** \`${earned} coins\`\n💵 **New Balance:** \`${newBalance.toLocaleString()} coins\``)
             .setThumbnail(interaction.user.displayAvatarURL({ size: 128 }))

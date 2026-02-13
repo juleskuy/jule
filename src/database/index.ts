@@ -118,3 +118,11 @@ export function getLeaderboard(guildId: string, limit: number = 10): UserProfile
         .sort((a, b) => b.level - a.level || b.xp - a.xp)
         .slice(0, limit);
 }
+
+export function getRichList(guildId: string, limit: number = 10): UserProfile[] {
+    const data = db.get();
+    return Object.values(data.users)
+        .filter(u => u.guildId === guildId)
+        .sort((a, b) => b.balance - a.balance)
+        .slice(0, limit);
+}

@@ -19,18 +19,18 @@ export default {
             return interaction.reply({ content: '❌ No data available yet! Start chatting to earn XP!', ephemeral: true });
         }
 
-        const description = await Promise.all(
-            leaderboard.map(async (profile, index) => {
-                const user = await interaction.client.users.fetch(profile.userId).catch(() => null);
-                const username = user?.username || 'Unknown User';
-                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `\`${String(index + 1).padStart(2, '0')}\``;
-                const levelBar = '▰'.repeat(Math.min(profile.level, 20));
-                return `${medal} **${username}**\n┗━ Level **${profile.level}** • ${profile.xp.toLocaleString()} XP\n${levelBar}`;
-            })
-        );
+        const description = [];
+        for (let i = 0; i < leaderboard.length; i++) {
+            const profile = leaderboard[i];
+            const user = await interaction.client.users.fetch(profile.userId).catch(() => null);
+            const username = user ? user.username : 'Unknown User';
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `\`${String(i + 1).padStart(2, '0')}\``;
+
+            description.push(`${medal} **${username}**\n┗━ Level **${profile.level}** • \`${profile.xp.toLocaleString()} XP\``);
+        }
 
         const embed = new EmbedBuilder()
-            .setColor(0xffd700)
+            .setColor(0x2b2d31)
             .setAuthor({ name: `${interaction.guild?.name} Leaderboard`, iconURL: interaction.guild?.iconURL() || undefined })
             .setDescription(description.join('\n\n'))
             .setFooter({ text: `Keep chatting to climb the ranks! • ${leaderboard.length} users tracked` })

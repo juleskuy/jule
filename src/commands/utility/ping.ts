@@ -12,11 +12,11 @@ export default {
         const latency = Date.now() - start;
 
         const embed = new EmbedBuilder()
-            .setColor(0x00ff00)
+            .setColor(0x2b2d31)
             .setTitle('🏓 Pong!')
             .addFields(
-                { name: 'Latency', value: `${latency}ms`, inline: true },
-                { name: 'API Latency', value: `${Math.round(interaction.client.ws.ping)}ms`, inline: true }
+                { name: '📡 Latency', value: `\`${latency}ms\``, inline: true },
+                { name: '💻 API Latency', value: `\`${Math.round(interaction.client.ws.ping)}ms\``, inline: true }
             )
             .setTimestamp();
 

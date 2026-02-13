@@ -18,6 +18,7 @@ export interface UserProfile {
     balance: number;
     lastDaily?: number;
     lastWork?: number;
+    lastRob?: number;
 }
 
 export interface Warning {

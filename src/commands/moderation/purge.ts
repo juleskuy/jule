@@ -38,9 +38,9 @@ export default {
         const deleted = await channel.bulkDelete(filteredMessages, true);
 
         const embed = new EmbedBuilder()
-            .setColor(0x00ff00)
+            .setColor(0x2b2d31)
             .setTitle('🗑️ Messages Purged')
-            .setDescription(`Successfully deleted ${deleted.size} message(s)${user ? ` from ${user.tag}` : ''}.`)
+            .setDescription(`Successfully deleted **${deleted.size}** message(s)${user ? ` from **${user.tag}**` : ''}.`)
             .setTimestamp();
 
         await interaction.editReply({ embeds: [embed] });

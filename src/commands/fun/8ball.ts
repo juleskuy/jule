@@ -37,12 +37,13 @@ export default {
         const response = RESPONSES[Math.floor(Math.random() * RESPONSES.length)];
 
         const embed = new EmbedBuilder()
-            .setColor(0x9b59b6)
+            .setColor(0x2b2d31)
             .setTitle('🎱 Magic 8Ball')
             .addFields(
-                { name: 'Question', value: question },
-                { name: 'Answer', value: response }
+                { name: '❓ Question', value: `\`${question}\`` },
+                { name: '🎱 Answer', value: `**${response}**` }
             )
+            .setFooter({ text: `Asked by ${interaction.user.tag}` })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

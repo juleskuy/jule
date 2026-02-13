@@ -45,14 +45,14 @@ export default {
         else if (rank <= 10) rankBadge = '⭐';
 
         const embed = new EmbedBuilder()
-            .setColor(profile.level >= 50 ? 0xffd700 : profile.level >= 25 ? 0x9b59b6 : profile.level >= 10 ? 0x3498db : 0x95a5a6)
+            .setColor(0x2b2d31)
             .setAuthor({ name: `${user.username}'s Rank Card`, iconURL: user.displayAvatarURL() })
             .setThumbnail(user.displayAvatarURL({ size: 256 }))
-            .setDescription(`${rankBadge} **Server Rank:** #${rank || 'Unranked'}\n⭐ **Level:** ${profile.level}\n✨ **Total XP:** ${profile.xp.toLocaleString()}`)
+            .setDescription(`${rankBadge} **Server Rank:** \`#${rank || 'Unranked'}\`\n⭐ **Level:** \`${profile.level}\`\n✨ **Total XP:** \`${profile.xp.toLocaleString()}\``)
             .addFields(
                 {
                     name: '📊 Level Progress',
-                    value: `\`\`\`${progressBar}\`\`\`\n${xpProgress.toLocaleString()} / ${xpNeeded.toLocaleString()} XP (${percentage}%)`,
+                    value: `\`\`\`${progressBar}\`\`\`\n**${xpProgress.toLocaleString()}** / **${xpNeeded.toLocaleString()}** XP (${percentage}%)`,
                     inline: false
                 }
             )

@@ -32,14 +32,14 @@ export default {
         }
 
         const embed = new EmbedBuilder()
-            .setColor(color)
+            .setColor(0x2b2d31)
             .setAuthor({ name: `${user.username}'s Wallet`, iconURL: user.displayAvatarURL() })
             .setThumbnail(user.displayAvatarURL({ size: 256 }))
             .setDescription(`${badge} **Balance**\n\`\`\`💰 ${profile.balance.toLocaleString()} coins\`\`\``)
             .addFields(
-                { name: '📊 Level', value: `${profile.level}`, inline: true },
-                { name: '✨ Total XP', value: `${profile.xp.toLocaleString()}`, inline: true },
-                { name: '💎 Wealth Tier', value: badge === '💎' ? 'Diamond' : badge === '💰' ? 'Gold' : badge === '💸' ? 'Silver' : 'Bronze', inline: true }
+                { name: '📊 Level', value: `\`${profile.level}\``, inline: true },
+                { name: '✨ Total XP', value: `\`${profile.xp.toLocaleString()}\``, inline: true },
+                { name: '💎 Wealth Tier', value: `**${badge === '💎' ? 'Diamond' : badge === '💰' ? 'Gold' : badge === '💸' ? 'Silver' : 'Bronze'}**`, inline: true }
             )
             .setFooter({ text: `${user.tag} • Use /daily and /work to earn more!` })
             .setTimestamp();

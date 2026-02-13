@@ -49,14 +49,15 @@ export default {
         });
 
         const embed = new EmbedBuilder()
-            .setColor(0xff6600)
+            .setColor(0x2b2d31)
             .setTitle('👢 User Kicked')
             .addFields(
-                { name: 'User', value: `${user.tag}`, inline: true },
-                { name: 'Moderator', value: `${interaction.user.tag}`, inline: true },
-                { name: 'Case ID', value: `#${caseId}`, inline: true },
-                { name: 'Reason', value: reason }
+                { name: '👤 User', value: `\`${user.tag}\``, inline: true },
+                { name: '🛡️ Moderator', value: `\`${interaction.user.tag}\``, inline: true },
+                { name: '📄 Case ID', value: `\`#${caseId}\``, inline: true },
+                { name: '📝 Reason', value: reason }
             )
+            .setThumbnail(user.displayAvatarURL())
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

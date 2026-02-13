@@ -54,14 +54,15 @@ export default {
         });
 
         const embed = new EmbedBuilder()
-            .setColor(0xff0000)
+            .setColor(0x2b2d31)
             .setTitle('🔨 User Banned')
             .addFields(
-                { name: 'User', value: `${user.tag}`, inline: true },
-                { name: 'Moderator', value: `${interaction.user.tag}`, inline: true },
-                { name: 'Case ID', value: `#${caseId}`, inline: true },
-                { name: 'Reason', value: reason }
+                { name: '👤 User', value: `\`${user.tag}\``, inline: true },
+                { name: '🛡️ Moderator', value: `\`${interaction.user.tag}\``, inline: true },
+                { name: '📄 Case ID', value: `\`#${caseId}\``, inline: true },
+                { name: '📝 Reason', value: reason }
             )
+            .setThumbnail(user.displayAvatarURL())
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

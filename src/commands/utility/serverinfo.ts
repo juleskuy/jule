@@ -17,20 +17,21 @@ export default {
         }
 
         const embed = new EmbedBuilder()
-            .setColor(0x5865f2)
+            .setColor(0x2b2d31)
             .setTitle(`${guild.name} Information`)
             .setThumbnail(guild.iconURL() || '')
             .addFields(
-                { name: '📋 Server ID', value: guild.id, inline: true },
+                { name: '📋 Server ID', value: `\`${guild.id}\``, inline: true },
                 { name: '👑 Owner', value: `<@${guild.ownerId}>`, inline: true },
                 { name: '📅 Created', value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:R>`, inline: true },
-                { name: '👥 Members', value: `${guild.memberCount}`, inline: true },
-                { name: '📝 Channels', value: `${guild.channels.cache.size}`, inline: true },
-                { name: '🎭 Roles', value: `${guild.roles.cache.size}`, inline: true },
-                { name: '😀 Emojis', value: `${guild.emojis.cache.size}`, inline: true },
-                { name: '🚀 Boost Level', value: `${guild.premiumTier}`, inline: true },
-                { name: '💎 Boost Count', value: `${guild.premiumSubscriptionCount || 0}`, inline: true }
+                { name: '👥 Members', value: `\`${guild.memberCount}\``, inline: true },
+                { name: '📝 Channels', value: `\`${guild.channels.cache.size}\``, inline: true },
+                { name: '🎭 Roles', value: `\`${guild.roles.cache.size}\``, inline: true },
+                { name: '😀 Emojis', value: `\`${guild.emojis.cache.size}\``, inline: true },
+                { name: '🚀 Boost Level', value: `\`Level ${guild.premiumTier}\``, inline: true },
+                { name: '💎 Boost Count', value: `\`${guild.premiumSubscriptionCount || 0} boosts\``, inline: true }
             )
+            .setFooter({ text: `Requested by ${interaction.user.tag}` })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

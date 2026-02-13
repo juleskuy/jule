@@ -8,7 +8,7 @@ export default {
     category: 'utility',
     async execute(interaction) {
         const embed = new EmbedBuilder()
-            .setColor(0x5865f2)
+            .setColor(0x2b2d31)
             .setTitle('📚 jule - Command List')
             .setDescription('Select a category below to view commands!')
             .addFields(
@@ -94,40 +94,40 @@ export default {
             switch (category) {
                 case 'moderation':
                     categoryEmbed = new EmbedBuilder()
-                        .setColor(0xff6b6b)
+                        .setColor(0x2b2d31)
                         .setTitle('🛡️ Moderation Commands')
                         .setDescription('Manage your server effectively')
                         .addFields(
-                            { name: '/warn', value: 'Warn a user with reason tracking', inline: false },
-                            { name: '/kick', value: 'Kick a member from the server', inline: false },
-                            { name: '/ban', value: 'Ban a user (with message deletion option)', inline: false },
-                            { name: '/mute', value: 'Timeout a user for specified duration', inline: false },
-                            { name: '/purge', value: 'Bulk delete messages (1-100)', inline: false }
+                            { name: '`/warn`', value: 'Warn a user with reason tracking', inline: false },
+                            { name: '`/kick`', value: 'Kick a member from the server', inline: false },
+                            { name: '`/ban`', value: 'Ban a user (with message deletion option)', inline: false },
+                            { name: '`/mute`', value: 'Timeout a user for specified duration', inline: false },
+                            { name: '`/purge`', value: 'Bulk delete messages (1-100)', inline: false }
                         )
                         .setFooter({ text: 'All moderation commands are logged and tracked' });
                     break;
 
                 case 'economy':
                     categoryEmbed = new EmbedBuilder()
-                        .setColor(0xffd700)
+                        .setColor(0x2b2d31)
                         .setTitle('💰 Economy Commands')
                         .setDescription('Earn and manage virtual currency')
                         .addFields(
-                            { name: '/balance', value: 'Check your or another user\'s balance', inline: false },
-                            { name: '/daily', value: 'Claim 100 coins daily (24h cooldown)', inline: false },
-                            { name: '/work', value: 'Work to earn 50-150 coins (1h cooldown)', inline: false }
+                            { name: '`/balance`', value: 'Check your or another user\'s balance', inline: false },
+                            { name: '`/daily`', value: 'Claim 100 coins daily (24h cooldown)', inline: false },
+                            { name: '`/work`', value: 'Work to earn 50-150 coins (1h cooldown)', inline: false }
                         )
                         .setFooter({ text: 'More economy features coming soon!' });
                     break;
 
                 case 'leveling':
                     categoryEmbed = new EmbedBuilder()
-                        .setColor(0x9b59b6)
+                        .setColor(0x2b2d31)
                         .setTitle('📊 Leveling Commands')
                         .setDescription('Track your server activity and progress')
                         .addFields(
-                            { name: '/rank', value: 'View your or another user\'s rank, level, and XP', inline: false },
-                            { name: '/leaderboard', value: 'View top 10 most active members', inline: false },
+                            { name: '`/rank`', value: 'View your or another user\'s rank, level, and XP', inline: false },
+                            { name: '`/leaderboard`', value: 'View top 10 most active members', inline: false },
                             { name: '📝 Auto XP', value: 'Earn 15-25 XP per message (1 min cooldown)', inline: false }
                         )
                         .setFooter({ text: '100 XP required per level' });
@@ -135,50 +135,51 @@ export default {
 
                 case 'fun':
                     categoryEmbed = new EmbedBuilder()
-                        .setColor(0xe91e63)
+                        .setColor(0x2b2d31)
                         .setTitle('🎮 Fun Commands')
                         .setDescription('Entertainment and games')
                         .addFields(
-                            { name: '/8ball', value: 'Ask the magic 8ball a question', inline: false },
-                            { name: '/coinflip', value: 'Flip a coin (heads or tails)', inline: false }
+                            { name: '`/8ball`', value: 'Ask the magic 8ball a question', inline: false },
+                            { name: '`/coinflip`', value: 'Flip a coin (heads or tails)', inline: false }
                         )
                         .setFooter({ text: 'More fun commands coming soon!' });
                     break;
 
                 case 'utility':
                     categoryEmbed = new EmbedBuilder()
-                        .setColor(0x3498db)
+                        .setColor(0x2b2d31)
                         .setTitle('🔧 Utility Commands')
                         .setDescription('Useful information and tools')
                         .addFields(
-                            { name: '/ping', value: 'Check bot latency and API response time', inline: false },
-                            { name: '/serverinfo', value: 'View detailed server information', inline: false },
-                            { name: '/userinfo', value: 'View detailed user information', inline: false },
-                            { name: '/help', value: 'View this help menu', inline: false }
+                            { name: '`/ping`', value: 'Check bot latency and API response time', inline: false },
+                            { name: '`/serverinfo`', value: 'View detailed server information', inline: false },
+                            { name: '`/userinfo`', value: 'View detailed user information', inline: false },
+                            { name: '`/help`', value: 'View this help menu', inline: false },
+                            { name: '`/setup-voice`', value: 'Setup Join to Create voice channel', inline: false },
                         );
                     break;
 
                 case 'admin':
                     categoryEmbed = new EmbedBuilder()
-                        .setColor(0xe74c3c)
+                        .setColor(0x2b2d31)
                         .setTitle('👑 Admin Commands')
                         .setDescription('Server configuration (Administrator only)')
                         .addFields(
-                            { name: '/config welcome', value: 'Set welcome message channel', inline: false },
-                            { name: '/config goodbye', value: 'Set goodbye message channel', inline: false },
-                            { name: '/config modlog', value: 'Set moderation log channel', inline: false },
-                            { name: '/config autorole', value: 'Set auto-role for new members', inline: false },
-                            { name: '/config leveling', value: 'Enable/disable leveling system', inline: false },
-                            { name: '/config view', value: 'View current server configuration', inline: false },
-                            { name: '/test welcome', value: 'Test welcome message', inline: false },
-                            { name: '/test goodbye', value: 'Test goodbye message', inline: false }
+                            { name: '`/config welcome`', value: 'Set welcome message channel', inline: false },
+                            { name: '`/config goodbye`', value: 'Set goodbye message channel', inline: false },
+                            { name: '`/config modlog`', value: 'Set moderation log channel', inline: false },
+                            { name: '`/config autorole`', value: 'Set auto-role for new members', inline: false },
+                            { name: '`/config leveling`', value: 'Enable/disable leveling system', inline: false },
+                            { name: '`/config view`', value: 'View current server configuration', inline: false },
+                            { name: '`/test welcome`', value: 'Test welcome message', inline: false },
+                            { name: '`/test goodbye`', value: 'Test goodbye message', inline: false }
                         )
                         .setFooter({ text: '⚠️ Administrator permission required' });
                     break;
 
                 case 'features':
                     categoryEmbed = new EmbedBuilder()
-                        .setColor(0x00d26a)
+                        .setColor(0x2b2d31)
                         .setTitle('⚡ Automatic Features')
                         .setDescription('Features that work automatically')
                         .addFields(

@@ -17,12 +17,12 @@ export default {
         const member = interaction.guild?.members.cache.get(user.id);
 
         const embed = new EmbedBuilder()
-            .setColor(0x5865f2)
+            .setColor(0x2b2d31)
             .setTitle(`${user.tag}`)
             .setThumbnail(user.displayAvatarURL({ size: 256 }))
             .addFields(
-                { name: '👤 Username', value: user.username, inline: true },
-                { name: '🆔 User ID', value: user.id, inline: true },
+                { name: '👤 Username', value: `\`${user.username}\``, inline: true },
+                { name: '🆔 User ID', value: `\`${user.id}\``, inline: true },
                 { name: '📅 Account Created', value: `<t:${Math.floor(user.createdTimestamp / 1000)}:R>`, inline: true }
             );
 

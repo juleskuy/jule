@@ -11,9 +11,10 @@ export default {
         const emoji = result === 'Heads' ? '🪙' : '🔘';
 
         const embed = new EmbedBuilder()
-            .setColor(result === 'Heads' ? 0xffd700 : 0xc0c0c0)
-            .setTitle('Coin Flip')
-            .setDescription(`${emoji} **${result}**`)
+            .setColor(0x2b2d31)
+            .setTitle('🪙 Coin Flip')
+            .setDescription(`The coin landed on:\n# ${emoji} **${result}**`)
+            .setFooter({ text: `Flipped by ${interaction.user.tag}` })
             .setTimestamp();
 
         await interaction.reply({ embeds: [embed] });

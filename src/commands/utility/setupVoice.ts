@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, VoiceChannel } from 'discord.js';
+import { SlashCommandBuilder, PermissionFlagsBits, ChannelType, VoiceChannel, EmbedBuilder } from 'discord.js';
 import { Command } from '../../types/command';
 import { updateGuildConfig } from '../../database';
 
@@ -38,20 +38,27 @@ const command: Command = {
                     joinToCreateChannelId: voiceChannel.id
                 });
 
-                await interaction.editReply({
-                    content: `✅ Successfully set up the Join to Create system using: **${voiceChannel.name}**${warning}`
-                });
+                const embed = new EmbedBuilder()
+                    .setColor(0x2b2d31)
+                    .setTitle('✅ Join to Create Setup')
+                    .setDescription(`Successfully set up the voice creation system using **${voiceChannel.name}**!`)
+                    .addFields(
+                        { name: '🎙️ Generator Channel', value: `<#${voiceChannel.id}>`, inline: true }
+                    )
+                    .setTimestamp();
+
+                if (warning) {
+                    embed.addFields({ name: '⚠️ Warning', value: 'The selected channel is not in a category. Created channels might be unorganized.' });
+                }
+
+                await interaction.editReply({ embeds: [embed] });
             } else {
-                await interaction.editReply({
-                    content: '❌ Invalid channel type. Please select a voice channel.'
-                });
+                await interaction.editReply({ content: '❌ Invalid channel type. Please select a voice channel.' });
             }
 
         } catch (error) {
             console.error('Error setting up voice system:', error);
-            await interaction.editReply({
-                content: '❌ An error occurred while setting up the voice system.'
-            });
+            await interaction.editReply({ content: '❌ An error occurred while setting up the voice system.' });
         }
     }
 };
